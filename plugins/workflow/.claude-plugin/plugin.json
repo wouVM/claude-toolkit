@@ -1,0 +1,12 @@
+{
+  "name": "workflow",
+  "displayName": "Workflow Toolkit",
+  "version": "0.1.0",
+  "description": "Landing gates and capture workflow: /gemini (independent second-opinion review, challenge, consult, judge), /springclean (adversarial taste-and-proportion panel), /issue (classified, cross-linked GitHub issue capture), /project-setup (seed the conventions into any repo)",
+  "author": {
+    "name": "Wouter Van Muylem",
+    "email": "wm@cvt.services"
+  },
+  "license": "MIT",
+  "keywords": ["review", "code-review", "gemini", "issues", "conventions"]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "design",
+  "displayName": "Design Toolkit",
+  "version": "0.1.0",
+  "description": "Design and frontend skills: GSAP animation (with reference docs), minimalist / premium / industrial-brutalist UI aesthetics, mobile app UI design, SwiftUI, and product film craft",
+  "author": {
+    "name": "Wouter Van Muylem",
+    "email": "wm@cvt.services"
+  },
+  "license": "MIT",
+  "keywords": ["design", "frontend", "ui", "gsap", "swiftui", "animation"]
+}

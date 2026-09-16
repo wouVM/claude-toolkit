@@ -1,0 +1,26 @@
+{
+  "name": "claude-toolkit",
+  "owner": {
+    "name": "Wouter Van Muylem",
+    "email": "wm@cvt.services"
+  },
+  "description": "Portable working conventions, review gates, and design skills for Claude Code",
+  "version": "0.1.0",
+  "metadata": {
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "workflow",
+      "source": "./plugins/workflow",
+      "description": "The landing-gate workflow: /gemini second-opinion reviews, /springclean taste panels, /issue capture, and /project-setup to seed conventions into any repo",
+      "version": "0.1.0"
+    },
+    {
+      "name": "design",
+      "source": "./plugins/design",
+      "description": "Design and frontend skills: GSAP animation, UI aesthetics (minimalist, premium, industrial-brutalist), mobile app UI, SwiftUI, and product film craft",
+      "version": "0.1.0"
+    }
+  ]
+}
