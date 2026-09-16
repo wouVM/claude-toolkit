@@ -73,14 +73,19 @@ On a finished chunk of work or a load-bearing diff:
 
 1. Read `TRAPS.md` FIRST - the work you are about to do is the work most likely to repeat one.
 2. Build foundation-first. Every problem solved becomes a test.
-3. Close with the independent reviewers: the CORRECTNESS gate is every independent code reviewer
+3. **Seen-running gate:** a change is not green until it has been observed working in the real app,
+   not only in unit tests. For UI work that means driving the live app with the machine's browser
+   tooling (e.g. a Playwright-based QA skill or the Playwright MCP): desktop AND mobile widths,
+   both color themes if the app has them, and the actual user flow end to end. Agent screenshots
+   inform; they do not replace the responsible human's own look at anything user-facing.
+4. Close with the independent reviewers: the CORRECTNESS gate is every independent code reviewer
    this machine has (e.g. `/codex review` + `/gemini review`), run in parallel - land only when
    all pass, and a single VERIFIED defect overrides a majority "pass". Then ONE taste gate
    (`/gemini judge` for a routine diff, `/springclean` for a load-bearing one): was this the RIGHT
    work - proportionate, no hand-rolling, honest? A correctness gate cannot reject a design: when
    a fix fails a SECOND review round with a brand-new defect, stop patching and run the taste gate
    before attempting a third.
-4. MAINTAIN `TRAPS.md` (sharpen the trap this round wore; add one only for a genuinely new shape)
+5. MAINTAIN `TRAPS.md` (sharpen the trap this round wore; add one only for a genuinely new shape)
    and file every open TODO the round leaves as a gh issue. Report what shipped, and every
    adhockery (propose fixes, never leave rot).
 
