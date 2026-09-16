@@ -25,6 +25,15 @@ Invoke them as slash commands (`/workflow:project-setup`) or let them trigger by
 | `issue` | Capture any loose thought as a classified, duplicate-checked, cross-linked GitHub issue with a `gh#N` handle |
 | `project-setup` | Seed a repo with the conventions: CLAUDE.md template, judge rubric, TRAPS.md trap book, FAULT-CATALOGUE.md, and the settings that auto-install this toolkit for everyone who clones |
 
+And three agents encoding the role-to-model cost discipline (invoke via the Agent tool; the
+description on each is the router - dispatch by role, never downgrade the whole session):
+
+| Agent | Model | Role |
+|---|---|---|
+| `explorer` | Sonnet | Cheap read-only fan-out: repo search, scouting, tracing - returns conclusions, not file dumps |
+| `builder` | Opus | Executes a specced chunk foundation-first, tests included; escalates design questions instead of improvising |
+| `reviewer` | (inherits) | One independent panel seat, never the builder; charter comes from the dispatch prompt: a correctness review of a range, or a single springclean taste lens |
+
 The workflow this encodes: work lands through TWO gates - a correctness gate (every independent
 reviewer the machine has, in parallel; one verified defect overrides a majority pass) and ONE
 taste gate (`/gemini judge` for routine diffs, `/springclean` for load-bearing ones). Conventions

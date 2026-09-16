@@ -73,8 +73,9 @@ smearing over a real sin.
 2. **Match the intensity to the stakes - do NOT over-run a taste check (the overdoing-it lens applies to
    THIS skill too).** For a small or routine diff, one reviewer sweeping all five lenses in a single pass - or
    just a `/gemini judge` - is enough; do not spin up a fleet to eyeball a few files. Reserve the FULL fan-out
-   (one independent reviewer agent per lens + a synthesis stage, via the `Workflow` tool or dispatched
-   `Explore` / `general-purpose` subagents, NONE of them the builder) for a LOAD-BEARING landing where the
+   (one independent reviewer agent per lens + a synthesis stage - dispatch this plugin's `reviewer` agent,
+   one per lens, via the `Workflow` tool or parallel Agent calls, NONE of them the builder) for a
+   LOAD-BEARING landing where the
    lenses genuinely need to be split out and defended. Independence is the point at either intensity. Each
    reviewer returns findings ranked by severity, each with a file cite and the concrete failure it implies.
 3. **Rebuttal loop.** For each finding, the builder answers "why". A finding that SURVIVES the rebuttal (the

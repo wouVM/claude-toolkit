@@ -13,8 +13,8 @@
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "The landing-gate workflow: /gemini second-opinion reviews, /springclean taste panels, /issue capture, and /project-setup to seed conventions into any repo",
-      "version": "0.1.0"
+      "description": "The landing-gate workflow: /gemini second-opinion reviews, /springclean taste panels, /issue capture, /project-setup to seed conventions into any repo, and the explorer/builder/reviewer agents",
+      "version": "0.2.0"
     },
     {
       "name": "design",
