@@ -1,8 +1,8 @@
 {
   "name": "workflow",
   "displayName": "Workflow Toolkit",
-  "version": "0.2.0",
-  "description": "Landing gates and capture workflow: /gemini (independent second-opinion review, challenge, consult, judge), /springclean (adversarial taste-and-proportion panel), /issue (classified, cross-linked GitHub issue capture), /project-setup (seed the conventions into any repo), plus the role-to-model agents (explorer scouts cheap, builder executes, reviewer sits on landing-gate panels)",
+  "version": "0.3.0",
+  "description": "Landing gates and capture workflow: /gemini (independent second-opinion review, challenge, consult, judge), /springclean (adversarial taste-and-proportion panel), /spec-sharpen (multi-pass requirements review until signable), /issue (classified, cross-linked GitHub issue capture), /project-setup (seed the conventions into any repo), plus the role-to-model agents (explorer scouts cheap, builder executes, reviewer sits on landing-gate panels)",
   "author": {
     "name": "Wouter Van Muylem",
     "email": "wm@cvt.services"

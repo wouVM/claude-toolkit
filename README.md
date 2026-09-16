@@ -24,6 +24,7 @@ Invoke them as slash commands (`/workflow:project-setup`) or let them trigger by
 | `springclean` | An adversarial taste panel (five lenses: overengineering, hand-rolling, KISS, fake tests, fronting) that grades a diff "achieved / not achieved" |
 | `issue` | Capture any loose thought as a classified, duplicate-checked, cross-linked GitHub issue with a `gh#N` handle |
 | `project-setup` | Seed a repo with the conventions: CLAUDE.md template, judge rubric, TRAPS.md trap book, FAULT-CATALOGUE.md, and the settings that auto-install this toolkit for everyone who clones |
+| `spec-sharpen` | Spec-driven development's spec-side gate: multi-pass requirements review (TPM lens, code-grounded dev lens, cold exhaust pass, premise reconcile with file:line citations) until a ticket/issue/spec is signable |
 
 And three agents encoding the role-to-model cost discipline (invoke via the Agent tool; the
 description on each is the router - dispatch by role, never downgrade the whole session):
