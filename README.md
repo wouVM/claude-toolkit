@@ -27,6 +27,9 @@ Invoke them as slash commands (`/workflow:project-setup`) or let them trigger by
 | `spec-sharpen` | Spec-driven development's spec-side gate: multi-pass requirements review (TPM lens, code-grounded dev lens, cold exhaust pass, premise reconcile with file:line citations) until a ticket/issue/spec is signable |
 | `build` | The cheap path across the role boundary: hand a spec to a builder subagent with the allowlist, no-crawl rule, budget and report-back prompt pre-written, then review only the diff |
 | `digest` | The read-side counterpart: send a long PDF, transcript or doc-set to a cheap scout and get findings back, instead of pulling it into the coordinator's context |
+| `intake` | An incoming request becomes one diagnosed ticket: symptom split from the requester's inference, a verdict with `file:line` evidence for every claim about current behaviour, sharpened, filed as a DRAFT for a human to sign |
+| `pickup` | A human-signed ticket becomes a branch: claim it so parallel runs cannot collide, isolate a worktree, route by diagnosis kind to the project's fix skill, verify, and land only as far as that route's `max_autonomy` allows. Never merges |
+| `worktree` | The isolation and conflict discipline: one worktree per ticket per sub-repo off a freshly fetched base, conflicts detected with a write-nothing `git merge-tree` dry run and handed to a human, never resolved |
 
 And three agents encoding the role-to-model cost discipline (invoke via the Agent tool; the
 description on each is the router - dispatch by role, never downgrade the whole session):
@@ -42,6 +45,12 @@ mechanism here, not a rule in a file: `project-setup` seeds a `PreToolUse` hook 
 coordinator-model edits to build code and points at `/build` instead. It fails open on every unknown and
 never fences a subagent. `/digest` covers the read side, which no hook can fence — blocking reads would
 break the coordinator's own job of reviewing a diff.
+
+**The ticket chain.** `intake` and `pickup` are two halves with a human signature between them: a
+request becomes a diagnosed draft ticket, a person moves it to the signed status, and only then may a
+run take it. The mechanism is the same in every project, so the policy lives in one per-project file,
+`.claude/pickup.json` (seeded by `project-setup`): which tracker, which repos, which fix skill per
+diagnosis kind, and a `max_autonomy` dial per route (`plan` / `branch` / `pr`). Merging is not a level.
 
 The workflow this encodes: work lands through TWO gates - a correctness gate (every independent
 reviewer the machine has, in parallel; one verified defect overrides a majority pass) and ONE

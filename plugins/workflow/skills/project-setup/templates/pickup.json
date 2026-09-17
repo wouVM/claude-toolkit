@@ -1,0 +1,37 @@
+{
+  "tracker": {
+    "kind": "jira",
+    "project": "FB",
+    "draft_status": "Triage",
+    "signed_status": "Ready for Dev",
+    "in_progress_status": "In Progress",
+    "pickup_label": "auto-fix",
+    "in_flight_label": "in-flight"
+  },
+  "repos": [
+    {
+      "name": "api",
+      "path": "projects/feedback-chatbot-api",
+      "base": "beta-release",
+      "branch_format": "<type>/<ticket>/<slug>"
+    }
+  ],
+  "worktree_root": "../fcb-worktrees",
+  "verify": "/verify all",
+  "diagnosis_kinds": ["prompt", "code"],
+  "routes": {
+    "prompt": {
+      "skill": "prompt-change",
+      "max_autonomy": "pr"
+    },
+    "code": {
+      "skill": null,
+      "max_autonomy": "plan",
+      "reason": "Backend beyond trivial fixes is Rafal's (.claude/rules/orchestration.md)"
+    }
+  },
+  "pr": {
+    "skill": "create-pr",
+    "never_merge": true
+  }
+}

@@ -41,9 +41,14 @@ Ask via AskUserQuestion (multiSelect) which pieces they want:
 5. **The role fence** - the `builder-model-guard.sh` PreToolUse hook (from
    `templates/builder-model-guard.sh`), which stops a coordinator-model session from editing build
    code and points it at `/build` instead
+6. **The ticket pickup policy** at `.claude/pickup.json` (from `templates/pickup.json`), which is
+   what `workflow:intake` and `workflow:pickup` read: the tracker, the repos and their base
+   branches, the verify command, and the per-route autonomy dial
 
-Default recommendation: all five for a fresh repo; for an existing repo with its own CLAUDE.md,
-recommend 2-5 plus a conventions MERGE.
+Default recommendation: all five of 1-5 for a fresh repo; for an existing repo with its own
+CLAUDE.md, recommend 2-5 plus a conventions MERGE. Offer 6 only where the project actually has a
+tracker that work arrives through: the pickup skills stop cleanly when the file is absent, so a
+half-filled one is worse than none.
 
 ## Step 3: Seed
 
@@ -96,6 +101,17 @@ recommend 2-5 plus a conventions MERGE.
   `CLAUDE_CODE_SUBAGENT_MODEL` makes the builder model the subagent default. Do NOT use the `_FORCE`
   variant: it would also override a per-call `model:`, which is how a scout gets the cheap model.
   Tell the user the fence is live and that `/build` is the path across it.
+
+- **The ticket pickup policy**: copy `templates/pickup.json` to `.claude/pickup.json` and replace
+  every value with this project's own. The tracker block needs the real project key and the exact
+  status names as the tracker spells them; `repos` needs each sub-repo's path and base branch;
+  `verify` needs the command the project actually runs. Set `diagnosis_kinds` to the kinds this
+  project can tell apart, and give each one a route. A route whose fix path a human owns takes
+  `"skill": null`, `"max_autonomy": "plan"`, and a `reason` naming that owner, which is the dial
+  Wouter asked for: flipping one route to `"pr"` is the whole change needed to hand that area to
+  automation while the owner is away. Ask for the status names and the owners rather than guessing
+  them, and tell the user that the signature (moving a ticket to `signed_status`) is theirs alone
+  and the only thing that authorises a pickup.
 
 ## Step 4: Report
 
