@@ -57,6 +57,25 @@ Every one of these is "the current best answer": when reality moves, update the 
   `./_scratch/` (gitignored). The ASSET is the finding, folded into the design record; the code is
   not kept.
 
+## Cost discipline (role-to-model, not cheapest-everywhere)
+
+- **The COORDINATOR directs and checks** the judgment nodes where one wrong call costs a whole phase: the
+  spec, the plan review, the diff review, any taste call or one-way door.
+- **The BUILDER executes** the build: the code and its tests.
+- **The SCOUT explores** the cheap-to-verify fan-out: repo search, scouting, reading long documents.
+
+Set per-agent (`Agent` `model:`) or per-stage; never downgrade the whole session. Put a token budget on
+every autonomous run and a file-allowlist + no-crawl on every subagent prompt.
+
+**The reads are the cost, not the edits.** A coordinator that has already read the source has spent the
+budget the delegation was meant to save, and will then reason that delegating means paying twice. So the
+decision belongs BEFORE the first read of build source, not after - and the moment a design session turns
+into a build is exactly the moment nothing announces. Two pre-written paths make the correct move the cheap
+one: `/build` to hand a spec to a builder, `/digest` to hand a long document to a scout.
+
+This is enforced, not just written: `.claude/hooks/builder-model-guard.sh` denies coordinator-model edits to
+build code. It fails open on every unknown and never fences a subagent.
+
 ## `gh#N` is a GitHub issue
 
 A `gh#N` in any text (chat, a doc, a commit message) means GitHub issue N in this repo, filed via

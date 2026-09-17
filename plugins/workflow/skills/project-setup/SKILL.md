@@ -38,9 +38,12 @@ Ask via AskUserQuestion (multiSelect) which pieces they want:
 3. **Trap book + fault catalogue** (`TRAPS.md`, `FAULT-CATALOGUE.md` skeletons)
 4. **Team auto-install** - commit `extraKnownMarketplaces` + `enabledPlugins` to
    `.claude/settings.json` so everyone who clones gets these plugins automatically
+5. **The role fence** - the `builder-model-guard.sh` PreToolUse hook (from
+   `templates/builder-model-guard.sh`), which stops a coordinator-model session from editing build
+   code and points it at `/build` instead
 
-Default recommendation: all four for a fresh repo; for an existing repo with its own CLAUDE.md,
-recommend 2-4 plus a conventions MERGE.
+Default recommendation: all five for a fresh repo; for an existing repo with its own CLAUDE.md,
+recommend 2-5 plus a conventions MERGE.
 
 ## Step 3: Seed
 
@@ -68,6 +71,31 @@ recommend 2-4 plus a conventions MERGE.
   Resolve the marketplace name and URL from the installed marketplace itself
   (`~/.claude/plugins/` config, or ask the user). Omit `design` if the repo has no UI. If the
   toolkit has no pushed remote yet, say so and skip this piece rather than writing a dead URL.
+
+- **The role fence**: copy `templates/builder-model-guard.sh` to `.claude/hooks/`, `chmod +x` it, and
+  set its two constants from what you learned in Step 1: `COORDINATOR_PATTERN` (the model id that must
+  not build - ask the user which model they coordinate on) and `BUILD_DIRS` (this repo's actual build
+  directories, as a `dir/*|dir/*` case pattern - use the real top-level layout, not the template's
+  guesses). Then merge the `PreToolUse` hook entry into `.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Edit|Write",
+        "hooks": [ { "type": "command",
+                     "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/builder-model-guard.sh\"",
+                     "timeout": 10,
+                     "statusMessage": "Checking the role fence" } ] }
+    ]
+  },
+  "env": { "CLAUDE_CODE_SUBAGENT_MODEL": "opus" }
+}
+```
+
+  `CLAUDE_CODE_SUBAGENT_MODEL` makes the builder model the subagent default. Do NOT use the `_FORCE`
+  variant: it would also override a per-call `model:`, which is how a scout gets the cheap model.
+  Tell the user the fence is live and that `/build` is the path across it.
 
 ## Step 4: Report
 
