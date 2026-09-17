@@ -6,7 +6,10 @@ description: >
   pass, and a mechanical premise reconcile (every present-tense claim about current system
   behavior gets a file:line citation or gets reworded out), with DECIDE/DEFER/KILL triage
   and a convergence stop rule. This is the spec-side landing gate that makes spec-driven
-  development real: defects caught here never reach the build. Works on a Jira ticket (via
+  development real: defects caught here never reach the build. It leaves the reasoning as a
+  comment trail on the ticket, one comment per lens carrying each finding's fate plus one for
+  the cited premises, so a DEFERRED or KILLED finding stays reviewable instead of vanishing.
+  Works on a Jira ticket (via
   the Atlassian MCP), a GitHub issue (via gh), or a plain markdown spec file. Use when the
   user says "sharpen this spec/ticket", "are these requirements complete", "make this
   signable", "spec-driven", or before handing any non-trivial spec to a builder (human or
@@ -34,7 +37,45 @@ The spec lives where the team tracks work; read it from there and write it back 
 
 The review record (premises, findings, triage fates, mechanism notes for the developer) goes
 to a sidecar file next to the project's docs (e.g. `docs/<ref>-review.md`), NEVER into the
-spec itself.
+spec itself, and where the spec is a ticket the same record posts as comments on it. The
+`lens_trail` block in `.claude/pickup.json` configures both: `post_comments` (default: post,
+where a ticket exists) and `sidecar` (the path pattern for the review file). A project whose
+tracker is noisy sets `post_comments: false` and keeps everything in the sidecar and the report.
+
+## The trail: the reasoning belongs where the ticket is
+
+Post the trail once, at the end of the run, when the spec is a ticket and the tracker supports
+comments. Use the tracker's own comment API through whatever MCP or CLI the project has
+(`addCommentToJiraIssue`, `gh issue comment`); this skill orchestrates and does not build a
+tracker client.
+
+**One comment per lens** (TPM, dev, exhaust), naming the lens and listing each finding with its
+fate. A `DECIDE` gets one line saying where it landed in the body. A `DEFER` gets its reason and
+the condition that would reopen it. A `KILL` gets why it was noise.
+
+The DEFER and KILL entries are the load-bearing ones. A DECIDE is already visible in the ticket
+body, so a comment about it mostly repeats the spec, but a dismissal that leaves no trace is
+exactly how a real finding gets lost: the exhaust pass raises a false premise, triage calls it
+non-material, and three weeks later nobody can tell it was ever considered. A dismissal recorded
+with its reason stays reviewable by the person who turns out to have been right.
+
+**One comment for the premise reconcile**, listing every present-tense claim the ticket makes
+about how the system behaves today, each with its `file:line` citation. This is the comment a
+human who knows the system can falsify in one read, which is the cheapest check available
+anywhere on the ticket.
+
+**A final comment only if the loop ended without converging**, saying what is still open and why
+it stopped.
+
+Write for a human skimming a ticket, not as a dump: terse, one finding per line where it fits, no
+restating what the body already says. A lens that found nothing gets a one-line comment saying so
+rather than no comment at all, because "no findings" is information and a missing comment is
+ambiguous between "clean" and "did not run". Post ONCE per sharpening run, and let a re-run add a
+new set rather than editing the old one: an edited trail is not a trail.
+
+No ticket to post to, which is the case for a spec file or a plain markdown doc, means the trail
+goes in the report and, where the project keeps one, the sidecar review file. Never invent a
+ticket to hold it.
 
 ## The hard rule: outcomes, never mechanisms
 
@@ -45,6 +86,16 @@ against the real business outcome ("but the ticket said GET /r/{token}"). Expres
 as observable outcomes ("two venues must never share a URL segment", not "add a unique
 constraint on name"). Genuinely useful implementation knowledge goes in the sidecar review
 file or the PR, never the spec. This rule fully applies to lens findings when you fold them in.
+
+**The rule binds the BODY, not a comment, and that is not a contradiction to be tidied away in
+either direction.** It binds the body because a spec detail written there becomes a literal
+implementation target AND a shield against the real outcome: an AC that read "wrapped in
+GET /r/{token}" got implemented verbatim and then quoted back to deflect criticism. A comment is
+discussion, not the contract, so a lens finding posted as a comment MAY name mechanism where
+naming it is the clearest way to state the finding. What the two halves share is one direction of
+travel: a mechanism detail may never migrate out of a comment and into an acceptance criterion.
+When you fold a comment's finding into the body, restate it as the observable outcome it implies
+and leave the mechanism behind in the comment.
 
 ## Round 1 - TPM lens (fresh agent)
 
@@ -93,8 +144,9 @@ Nobody owns that unless you do. Mechanically:
    "this is currently produced by Z").
 2. Give each a `file:line` citation from the code scan. No citation means it is a guess:
    verify it or reword it out.
-3. List the premises at the top of the sidecar review file, so a human who knows the system
-   can falsify them in one read - the cheapest check available; make it easy.
+3. List the premises at the top of the sidecar review file, and in the premise comment on the
+   ticket, so a human who knows the system can falsify them in one read - the cheapest check
+   available; make it easy.
 
 Treat as **material, never triaged away on a body-only reading**, any finding of the form
 "which layer does this behavior actually live in?" or "this AC assumes X is config-driven /
@@ -104,8 +156,12 @@ a false premise that an exhaust pass HAD flagged and triage dismissed.
 ## Triage - every finding gets exactly one of three fates
 
 - **DECIDE now**: resolve it and write the outcome into the spec.
-- **DEFER**: with a one-line reason, stated in the spec (usually Out of scope).
-- **KILL**: noise, drop it silently.
+- **DEFER**: with a one-line reason, stated in the spec (usually Out of scope), and with the
+  condition that would reopen it recorded in the lens comment.
+- **KILL**: noise, dropped from the spec, with why it was noise recorded in the lens comment.
+
+Every fate is recorded in the trail, which is what makes the triage itself reviewable. A fate
+assigned in a session nobody reads is a decision nobody can check.
 
 Where a DECIDE needs the user (a genuine stakeholder call), batch the questions and ask once
 via AskUserQuestion; an unresolved stakeholder question is a BLOCKER, not a footnote - either
@@ -119,6 +175,10 @@ clean: re-run the exhaust prompt on the updated spec; if two passes in a row pro
 DEFER/KILL fates and zero new DECIDEs, and every present-tense claim carries a citation, the
 spec is signable. Re-run the reconcile after ANY late edit - edits made after convergence are
 unreviewed by construction, and that is exactly where a bad premise gets in.
+
+A run that stops without converging, on a budget or a blocker, still posts its trail, and adds the
+final comment naming what is open and why it stopped. A ticket that looks sharpened but is not is
+the one case where the trail is worth more than the spec.
 
 ## Non-negotiables
 

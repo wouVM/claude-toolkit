@@ -39,6 +39,10 @@
     "closed_window_days": 180,
     "regression_label": "regression"
   },
+  "lens_trail": {
+    "post_comments": true,
+    "sidecar": "docs/<ticket>-review.md"
+  },
   "pr": {
     "skill": "create-pr",
     "never_merge": true

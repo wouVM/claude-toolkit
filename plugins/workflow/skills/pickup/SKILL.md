@@ -8,7 +8,9 @@ description: >
   reviewers before it lands, and land only as far as that route's max_autonomy allows. Use when
   the user says "/pickup", "pick up the next ticket", "work the queue", "anything signed off
   yet", "take FB-123", "review it before the PR", "run the reviewers on this branch", or
-  schedules an unattended run over a tracker. Reads its policy from
+  schedules an unattended run over a tracker. Bootstraps its own labels: a preflight proves the
+  tracker accepts the configured labels and that the poll query is well-formed before any poll
+  runs, so nobody has to hand-apply a label to a real ticket to conjure it. Reads its policy from
   .claude/pickup.json and stops with an explanation if that file is absent. It NEVER merges,
   never resolves a conflict, and never signs a ticket itself (that is the human's act, and the
   ticket half is workflow:intake).
@@ -34,7 +36,36 @@ which taste gate to escalate to, how many rounds are allowed). If it is absent, 
 would be needed and stop. Do not improvise a tracker query, a base branch, or a fix path: this skill is
 identical in every project and only the config makes it correct in one.
 
-## Step 1: POLL (read-only)
+## Step 1: PREFLIGHT the labels and the query
+
+Before the first poll of a session, prove that `pickup_label` and `in_flight_label` are usable and
+that the poll query built from them is well-formed. This runs once per session and is idempotent, and
+it NEVER touches a ticket to achieve it.
+
+What "ensure the label exists" means depends on the tracker, because trackers disagree about what a
+label is.
+
+In Jira a label is not a first-class object. It springs into the label pool the first time it is
+applied to an issue and vanishes when the last issue drops it, so there is nothing to create and no
+API that creates one. Ensuring it therefore means two checks that write nothing: confirm the tracker
+will ACCEPT the label (the field exists on the project's issue type and the string is a legal label,
+no spaces), and run the poll query itself to confirm it is well-formed and returns a result set. Zero
+results is a valid answer and is exactly what proves the query works. Do NOT apply the label to some
+unrelated ticket to bootstrap it into the pool: that would make that ticket pickup-eligible the
+moment someone moves it, which is the workaround this preflight exists to remove.
+
+Where the tracker DOES have first-class labels, create them idempotently. On GitHub that is the
+`workflow:issue` pattern, `gh label create "<label>" --repo "$REPO" 2>/dev/null || true`, which
+succeeds whether or not the label was already there.
+
+If the preflight cannot run at all, because the tracker is unreachable, auth is missing, or the
+project key resolves to nothing, STOP and say what is missing and what the human should do about it.
+Never proceed to poll on a query you could not verify. A malformed or unmatched query returns zero
+tickets, and zero tickets is indistinguishable from "no work to do": the run reports a clean no-op,
+looks exactly like success, and does it again on every schedule. Silently doing nothing forever is
+the worst failure this chain has, precisely because nobody is watching the session it happens in.
+
+## Step 2: POLL (read-only)
 
 Find candidates: in `signed_status`, carrying `pickup_label`, with no linked PR and without
 `in_flight_label`. Shaped as JQL:
@@ -44,11 +75,12 @@ project = FB AND status = "Ready for Dev" AND labels = "auto-fix"
   AND labels != "in-flight" AND issueFunction not in linkedIssuesOf("...")
 ```
 
-Use the project's tracker MCP or CLI. Take ONE ticket unless the user explicitly asked for more.
-Polling writes nothing, to the tracker or the repo, so a poll that finds nothing is a clean no-op
-and a safe thing to run on a schedule.
+Use the project's tracker MCP or CLI, and use the query the preflight already proved well-formed.
+Take ONE ticket unless the user explicitly asked for more. Polling writes nothing, to the tracker or
+the repo, so a poll that finds nothing is a clean no-op and a safe thing to run on a schedule, which
+it only is because the preflight has already ruled out the other reason a query returns nothing.
 
-## Step 2: CLAIM, before any work
+## Step 3: CLAIM, before any work
 
 Add `in_flight_label` and, if `in_progress_status` is configured, transition the ticket. Only then
 start.
@@ -58,13 +90,13 @@ queue seconds apart; if the claim happens after the work, both do the work and o
 it at push time, having burned a full run. The label is a cheap lock in a place both runs can see.
 If the claim write fails, stop: an unclaimed ticket is not yours.
 
-## Step 3: ISOLATE
+## Step 4: ISOLATE
 
 Create the worktree with `workflow:worktree`, in the sub-repo the ticket touches, branched from that
 repo's freshly fetched `base`. That skill owns the isolation and conflict discipline; do not
 hand-roll a `git checkout` here.
 
-## Step 4: ROUTE by diagnosis kind
+## Step 5: ROUTE by diagnosis kind
 
 Look up the ticket's diagnosis kind in `routes`. Each route names a project skill and a
 `max_autonomy`.
@@ -80,7 +112,7 @@ it is how an automated chain starts writing code nobody asked it to write, in a 
 whose owner was never consulted. A plan on the ticket is useful to that owner; a surprise diff is
 not.
 
-## Step 5: VERIFY
+## Step 6: VERIFY
 
 Run the project's `verify` command, exactly as configured, and read the real output.
 
@@ -90,7 +122,7 @@ information: either the fix is wrong, or the suite pins something the ticket did
 Both are things a human needs to see, and both are destroyed by a run that quietly adjusts the
 assertion.
 
-## Step 6: REVIEW, in a loop that is allowed to end badly
+## Step 7: REVIEW, in a loop that is allowed to end badly
 
 This step runs when the route's `max_autonomy` is `branch` or `pr`. A `plan` route produced no diff,
 so there is nothing to review and the loop is skipped. If `.claude/pickup.json` has no `review`
@@ -124,7 +156,7 @@ ran. Leave the worktree and the branch standing and hand it to a human. An exhau
 finding, not an obstacle to work around, and a loop with no exit is how an unattended run burns a
 budget and lands something nobody chose.
 
-## Step 7: LAND, to `max_autonomy` and no further
+## Step 8: LAND, to `max_autonomy` and no further
 
 Each route carries its own dial, and it is the only thing that changes to turn a capability on or
 off for a project or a person:
@@ -138,7 +170,7 @@ Merging is not a level. There is no configuration that permits it.
 Before the PR, `workflow:worktree` re-fetches the base and dry-runs the merge. A detected conflict
 STOPS the run at that point, whatever the dial says.
 
-## Step 8: ALWAYS report back ON THE TICKET
+## Step 9: ALWAYS report back ON THE TICKET
 
 Every path out of this skill (success, plan-only, failing verify, an exhausted review loop, a taste
 verdict, a conflict, missing config) ends with a comment on the ticket: what was done, the branch

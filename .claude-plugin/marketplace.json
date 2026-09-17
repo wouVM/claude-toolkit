@@ -13,8 +13,8 @@
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "The landing-gate workflow: /gemini second-opinion reviews, /springclean taste panels, /spec-sharpen requirements gate, /build and /digest role-boundary paths, /issue capture, the /intake-signature-/pickup ticket chain with relation and regression scanning, a bounded reviewer loop and /worktree isolation, /project-setup to seed conventions plus the role-fence hook and the pickup policy, and the explorer/builder/reviewer agents",
-      "version": "0.6.0"
+      "description": "The landing-gate workflow: /gemini second-opinion reviews, /springclean taste panels, /spec-sharpen requirements gate with its append-only lens comment trail, /build and /digest role-boundary paths, /issue capture, the /intake-signature-/pickup ticket chain with relation and regression scanning, self-bootstrapping pickup labels, a bounded reviewer loop and /worktree isolation, /project-setup to seed conventions plus the role-fence hook and the pickup policy, and the explorer/builder/reviewer agents",
+      "version": "0.7.0"
     },
     {
       "name": "design",

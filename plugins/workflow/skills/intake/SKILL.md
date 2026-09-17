@@ -29,8 +29,9 @@ read. The human signs it. The signature is the only thing that authorises work.
 ## Step 0: the config
 
 Read `.claude/pickup.json` from the repo root. It names the tracker, the project key, the draft and
-signed statuses, the labels, the `diagnosis_kinds` this project routes on, and the `relations` block
-(how far back to look for closed tickets, and the project's regression marker). If the file is
+signed statuses, the labels, the `diagnosis_kinds` this project routes on, the `relations` block
+(how far back to look for closed tickets, and the project's regression marker), and the `lens_trail`
+block (whether the sharpening trail posts as ticket comments, and where its sidecar lives). If the file is
 absent, say exactly which fields you would need and stop: guessing a tracker project key files a
 ticket into somebody else's board, and inventing a diagnosis kind produces a verdict that
 `workflow:pickup` cannot route.
@@ -126,11 +127,24 @@ Run `workflow:spec-sharpen` on the draft. Match intensity to stakes as that skil
 bug report gets the combined lens and the premise reconcile, not four rounds. Fold its DECIDEs in,
 write its DEFERs into the ticket body, and keep its sidecar review file out of the ticket.
 
+The sharpening leaves a comment trail on the ticket: one comment per lens with each finding's fate,
+one carrying the cited premises, and a final one if the loop stopped without converging. That trail
+is where a DEFERRED or KILLED finding survives, so a dismissal stays reviewable by the person who
+later turns out to have been right. The body stays outcomes only, and the comments carry the
+reasoning that produced it, including mechanism where naming a mechanism is the clearest way to
+state a finding. Because the sharpening runs before the ticket is filed, post the trail once the
+ticket exists, in Step 6. Where `lens_trail.post_comments` is false, or the draft has no ticket yet
+to carry it, the trail goes in the sidecar and the report instead.
+
 ## Step 6: file as DRAFT
 
 File into the tracker in the project's configured draft or triage status, with `pickup_label` if the
 project wants the ticket to be pickup-eligible once signed. Attach the diagnosis verdict in whatever
 field the project routes on (a label, a custom field, or a line in the body that pickup can read).
+
+Then post the sharpening trail from Step 5 as comments on the ticket you just filed, once, in the
+shape `workflow:spec-sharpen` defines. The human about to sign reads the body, and the trail is what
+tells them what was considered and thrown away before it got there.
 
 **Never transition the ticket to the signed status.** That transition is the human's act, it is the
 only authorisation `workflow:pickup` recognises, and a skill that could both file and sign would
@@ -140,6 +154,7 @@ an authorisation should be.
 ## Step 7: report
 
 Report the ticket ref, the diagnosis verdict and why, the relation verdict and the tickets it names,
-the premises with their citations, and, as its own section, what the investigation could NOT
-determine. The last one is the part a reader will act
+the premises with their citations, where the sharpening trail landed (the comments on the ticket, the
+sidecar file, or this report when neither was available), and, as its own section, what the
+investigation could NOT determine. The last one is the part a reader will act
 on, so do not bury it.
