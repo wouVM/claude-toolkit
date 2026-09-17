@@ -30,6 +30,15 @@
       "reason": "Backend beyond trivial fixes is Rafal's (.claude/rules/orchestration.md)"
     }
   },
+  "review": {
+    "reviewers": ["codex review", "gemini review"],
+    "taste_gate": "springclean",
+    "max_rounds": 2
+  },
+  "relations": {
+    "closed_window_days": 180,
+    "regression_label": "regression"
+  },
   "pr": {
     "skill": "create-pr",
     "never_merge": true

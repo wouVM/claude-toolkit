@@ -5,9 +5,12 @@ description: >
   one diagnosed, evidence-cited, sharpened ticket filed in the tracker as a DRAFT for a human
   to sign. Separates the reporter's SYMPTOM from their INFERENCE, dispatches a grounded
   investigation that must cite file:line for every claim about how the system behaves today,
-  then runs spec-sharpen and files. Use when the user says "/intake", "turn this email into a
-  ticket", "file this complaint", "a client reported X, write it up", "triage this request",
-  or pastes a customer message expecting work to come out of it. NOT for writing a ticket the
+  scans the tracker for what the request already relates to (a duplicate of an open ticket, or a
+  REGRESSION of a closed one), then runs spec-sharpen and files. Use when the user says
+  "/intake", "turn this email into a ticket", "file this complaint", "a client reported X, write
+  it up", "triage this request", "did anyone already report this?", "is this a known issue",
+  "didn't we fix this already", or pastes a customer message expecting work to come out of it.
+  NOT for writing a ticket the
   user has already diagnosed (file that yourself), NOT for picking up a signed ticket (that is
   workflow:pickup), and it never signs off its own ticket.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, AskUserQuestion, Skill
@@ -19,13 +22,15 @@ ELI16 first: someone emails you "the bot can't book appointments". That sentence
 different things glued together: what they SAW (no appointment got booked) and what they THINK is
 wrong (the bot is broken). Writing a ticket that repeats the glued sentence hands the wrong problem
 to whoever picks it up. This skill pulls the two apart, sends a cheap agent to find out what the
-system actually does today with line numbers to prove it, and files a draft ticket that a human can
-falsify in one read. The human signs it. The signature is the only thing that authorises work.
+system actually does today with line numbers to prove it, checks whether the tracker already holds
+this thing (or once held it and closed it), and files a draft ticket that a human can falsify in one
+read. The human signs it. The signature is the only thing that authorises work.
 
 ## Step 0: the config
 
 Read `.claude/pickup.json` from the repo root. It names the tracker, the project key, the draft and
-signed statuses, the labels, and the `diagnosis_kinds` this project routes on. If the file is
+signed statuses, the labels, the `diagnosis_kinds` this project routes on, and the `relations` block
+(how far back to look for closed tickets, and the project's regression marker). If the file is
 absent, say exactly which fields you would need and stop: guessing a tracker project key files a
 ticket into somebody else's board, and inventing a diagnosis kind produces a verdict that
 `workflow:pickup` cannot route.
@@ -67,7 +72,44 @@ ticket exists.
 determine which layer owns this" routes to a human; a ticket that guesses `code` routes to a builder
 who will then make the guess true.
 
-## Step 3: draft it in the project's house style
+## Step 3: scan the tracker for what this already relates to
+
+The diagnosis hands you the words worth searching, and there is no point drafting a ticket that
+should have been a comment on one that exists. Query the tracker twice, bounded, using the salient
+nouns from the request and the diagnosis: OPEN tickets in the project, and CLOSED tickets within
+`relations.closed_window_days` (default 180). If the project has its own issue or ticket skill that
+already scours relations (`workflow:issue` does), let it own the OPEN half rather than duplicating
+its logic, and run the CLOSED half here, which it does not cover.
+
+Then read the candidates and decide the relation IN CONTEXT, as ONE verdict rather than prose that
+hedges:
+
+- **duplicate** of an OPEN ticket: the same item already exists. Do NOT file. Propose amending that
+  ticket with the new evidence instead (a second reporter, a new symptom, a fresh occurrence).
+- **regression-of** a CLOSED ticket: the request matches something already fixed and closed. File a
+  NEW ticket, link the closed one explicitly, and say in the body that this is a recurrence of
+  `<ref>`, closed on `<date>`. Where the project's conventions carry a regression marker
+  (`relations.regression_label`, or a field), apply it.
+- **related** to one or more tickets: overlapping, distinct. File and cross-link.
+- **sub-issue** of an open ticket: a concrete piece of a larger existing item.
+- **new**: nothing meaningfully connected.
+
+The regression case is the one a plain duplicate check misses, because a duplicate check only ever
+looks at open tickets, and it is the most valuable verdict here. A regression is a DIFFERENT and more
+urgent thing than a new bug: something that was verified working is broken again. It also arrives
+with an inheritance, because the original ticket carries the fix, the test that was supposed to pin
+it, and the reasoning about why that was the right fix. A ticket filed as a fresh bug throws all of
+that away and pays for it twice.
+
+Be conservative on every verdict: claim only a relation a human would agree with at a glance, and
+judge on meaning, never on shared words. Present it TIGHT (the ref, a short title, half a line of
+why), then confirm before filing unless the caller passed a skip-confirm flag. Filing is outward and
+sticky, so this confirm doubles as the post gate.
+
+If `.claude/pickup.json` has no `relations` block, scan the open tickets and, where the tracker makes
+it cheap, the closed ones on the same default window. A missing optional block never fails the run.
+
+## Step 4: draft it in the project's house style
 
 If the project has its own ticket-writing skill (`jira-ticket-writing`, a house template, a
 CONTRIBUTING section), USE IT and let it own the format. This skill orchestrates; it does not
@@ -78,13 +120,13 @@ that someone who never reads the diff could check.
 Put the PREMISES at the top, as a short list with their citations. A human who knows the system can
 then falsify the ticket in one read, which is the cheapest review available anywhere in this chain.
 
-## Step 4: sharpen
+## Step 5: sharpen
 
 Run `workflow:spec-sharpen` on the draft. Match intensity to stakes as that skill says: a two-line
 bug report gets the combined lens and the premise reconcile, not four rounds. Fold its DECIDEs in,
 write its DEFERs into the ticket body, and keep its sidecar review file out of the ticket.
 
-## Step 5: file as DRAFT
+## Step 6: file as DRAFT
 
 File into the tracker in the project's configured draft or triage status, with `pickup_label` if the
 project wants the ticket to be pickup-eligible once signed. Attach the diagnosis verdict in whatever
@@ -95,8 +137,9 @@ only authorisation `workflow:pickup` recognises, and a skill that could both fil
 make the signature decorative. It is also reversible and visible to the team, which is exactly what
 an authorisation should be.
 
-## Step 6: report
+## Step 7: report
 
-Report the ticket ref, the diagnosis verdict and why, the premises with their citations, and, as its
-own section, what the investigation could NOT determine. The last one is the part a reader will act
+Report the ticket ref, the diagnosis verdict and why, the relation verdict and the tickets it names,
+the premises with their citations, and, as its own section, what the investigation could NOT
+determine. The last one is the part a reader will act
 on, so do not bury it.

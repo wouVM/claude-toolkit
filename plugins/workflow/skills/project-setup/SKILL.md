@@ -109,9 +109,14 @@ half-filled one is worse than none.
   project can tell apart, and give each one a route. A route whose fix path a human owns takes
   `"skill": null`, `"max_autonomy": "plan"`, and a `reason` naming that owner, which is the dial
   Wouter asked for: flipping one route to `"pr"` is the whole change needed to hand that area to
-  automation while the owner is away. Ask for the status names and the owners rather than guessing
-  them, and tell the user that the signature (moving a ticket to `signed_status`) is theirs alone
-  and the only thing that authorises a pickup.
+  automation while the owner is away. Set `review.reviewers` to the reviewers this project ACTUALLY
+  has installed and authenticated (an unreachable reviewer is a stalled run, and `pickup` skips the
+  loop and says so when the block is absent, which is better than a name that resolves to nothing),
+  pick the `taste_gate` it escalates to when a fix keeps minting new defects, and leave `max_rounds`
+  small. Set `relations.regression_label` to the project's own marker for "this came back", or drop
+  the key where the project has none rather than inventing a label its board does not use. Ask for
+  the status names and the owners rather than guessing them, and tell the user that the signature
+  (moving a ticket to `signed_status`) is theirs alone and the only thing that authorises a pickup.
 
 ## Step 4: Report
 
