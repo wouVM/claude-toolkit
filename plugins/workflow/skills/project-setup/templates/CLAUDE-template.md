@@ -61,7 +61,8 @@ Every one of these is "the current best answer": when reality moves, update the 
 
 - **The COORDINATOR directs and checks** the judgment nodes where one wrong call costs a whole phase: the
   spec, the plan review, the diff review, any taste call or one-way door.
-- **The BUILDER executes** the build: the code and its tests.
+- **The BUILDER executes** the build: the code, with the existing suite kept green. Its new tests come from a
+  separate agent (`workflow:test-writing`), which tests what was promised rather than how it was built.
 - **The SCOUT explores** the cheap-to-verify fan-out: repo search, scouting, reading long documents.
 
 Set per-agent (`Agent` `model:`) or per-stage; never downgrade the whole session. Put a token budget on

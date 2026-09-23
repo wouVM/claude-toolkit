@@ -4,8 +4,9 @@ description: >
   Seed a repo with the toolkit's working conventions so every new project starts set up
   properly: a CLAUDE.md built from the conventions template (kernel mode, proportionality,
   lib-first, the trap book, the landing gates), the judge rubric at .claude/gemini-judge.md,
-  the TRAPS.md trap book and FAULT-CATALOGUE.md skeletons, and the .claude/settings.json
-  entries that auto-install this toolkit's plugins for everyone who clones the repo. Use in
+  the TRAPS.md trap book and FAULT-CATALOGUE.md skeletons, the testing rule at
+  .claude/rules/testing.md, and the .claude/settings.json entries that auto-install this
+  toolkit's plugins for everyone who clones the repo. Use in
   a fresh or existing repo when the user says "/project-setup", "set up this project",
   "seed the conventions", "bootstrap claude for this repo", or "give this repo the toolkit
   setup". Merges with an existing CLAUDE.md, never overwrites one.
@@ -44,11 +45,15 @@ Ask via AskUserQuestion (multiSelect) which pieces they want:
 6. **The ticket pickup policy** at `.claude/pickup.json` (from `templates/pickup.json`), which is
    what `workflow:intake` and `workflow:pickup` read: the tracker, the repos and their base
    branches, the verify command, and the per-route autonomy dial
+7. **The testing rule** at `.claude/rules/testing.md` (from `templates/testing-rule.md`), the floor
+   the builder and `workflow:test-writing` follow: which tests earn their lines, one test per rule,
+   and the test-to-code ratio a PR has to justify
 
 Default recommendation: all five of 1-5 for a fresh repo; for an existing repo with its own
 CLAUDE.md, recommend 2-5 plus a conventions MERGE. Offer 6 only where the project actually has a
 tracker that work arrives through: the pickup skills stop cleanly when the file is absent, so a
-half-filled one is worse than none.
+half-filled one is worse than none. Recommend 7 wherever the repo has a test suite or is about to
+get one.
 
 ## Step 3: Seed
 
@@ -105,10 +110,12 @@ half-filled one is worse than none.
 - **The ticket pickup policy**: copy `templates/pickup.json` to `.claude/pickup.json` and replace
   every value with this project's own. The tracker block needs the real project key and the exact
   status names as the tracker spells them; `repos` needs each sub-repo's path and base branch;
-  `verify` needs the command the project actually runs. Set `diagnosis_kinds` to the kinds this
+  `verify` needs the command the project actually runs; where that is a verify skill the project
+  writes itself, it derives the repo root at runtime (`git rev-parse --show-toplevel`, `git worktree
+  list`), never a hardcoded absolute path, so it runs in every worktree on every machine. Set `diagnosis_kinds` to the kinds this
   project can tell apart, and give each one a route. A route whose fix path a human owns takes
   `"skill": null`, `"max_autonomy": "plan"`, and a `reason` naming that owner, which is the dial
-  Wouter asked for: flipping one route to `"pr"` is the whole change needed to hand that area to
+  that matters: flipping one route to `"pr"` is the whole change needed to hand that area to
   automation while the owner is away. Set `review.reviewers` to the reviewers this project ACTUALLY
   has installed and authenticated (an unreachable reviewer is a stalled run, and `pickup` skips the
   loop and says so when the block is absent, which is better than a name that resolves to nothing),
@@ -120,6 +127,13 @@ half-filled one is worse than none.
   bury the ticket, in which case false keeps that reasoning in the sidecar and the run's report. Ask for
   the status names and the owners rather than guessing them, and tell the user that the signature
   (moving a ticket to `signed_status`) is theirs alone and the only thing that authorises a pickup.
+
+- **The testing rule**: copy `templates/testing-rule.md` to `.claude/rules/testing.md` (skip it if the
+  file exists; if CLAUDE.md already carries a testing section, propose the rule as a merge into it
+  instead of a second copy). Replace each `<PLACEHOLDER>` with this project's own: the high-stakes
+  areas its bugs would actually hurt, the parametrize idiom of its test runner, and the boundaries
+  it really mocks (read the existing tests for these). Drop a bullet that cannot apply, such as the
+  migration line in a repo with no database.
 
 ## Step 4: Report
 

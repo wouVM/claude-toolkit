@@ -1,7 +1,7 @@
 {
   "tracker": {
     "kind": "jira",
-    "project": "FB",
+    "project": "<PROJECT_KEY>",
     "draft_status": "Triage",
     "signed_status": "Ready for Dev",
     "in_progress_status": "In Progress",
@@ -11,23 +11,23 @@
   "repos": [
     {
       "name": "api",
-      "path": "projects/feedback-chatbot-api",
-      "base": "beta-release",
+      "path": "<PATH_TO_SUB_REPO>",
+      "base": "main",
       "branch_format": "<type>/<ticket>/<slug>"
     }
   ],
-  "worktree_root": "../fcb-worktrees",
+  "worktree_root": "../worktrees",
   "verify": "/verify all",
-  "diagnosis_kinds": ["prompt", "code"],
+  "diagnosis_kinds": ["config", "code"],
   "routes": {
-    "prompt": {
-      "skill": "prompt-change",
+    "config": {
+      "skill": "<CONFIG_FIX_SKILL>",
       "max_autonomy": "pr"
     },
     "code": {
       "skill": null,
       "max_autonomy": "plan",
-      "reason": "Backend beyond trivial fixes is Rafal's (.claude/rules/orchestration.md)"
+      "reason": "<AREA> beyond trivial fixes is owned by <OWNER>"
     }
   },
   "review": {
@@ -44,7 +44,7 @@
     "sidecar": "docs/<ticket>-review.md"
   },
   "pr": {
-    "skill": "create-pr",
+    "skill": "<PR_SKILL>",
     "never_merge": true
   }
 }

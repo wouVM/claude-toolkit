@@ -3,7 +3,8 @@ name: worktree
 description: >
   Isolate a piece of work in its own git worktree, per ticket and per sub-repo, branched from a
   freshly fetched base, and keep the conflict discipline: detect a conflicting merge with a
-  write-nothing dry run and STOP, never resolve it, never rebase, merge, force-push or reset.
+  write-nothing dry run and STOP, never resolve it, and never rebase, merge, force-push or reset on
+  its own.
   Use when the user says "/worktree", "work on this in isolation", "set up a worktree for
   TICKET-123", "spin up a branch env for this repo", or when several agents or people are about
   to touch the same repo at once. workflow:pickup calls this for every ticket it takes. NOT a
@@ -80,6 +81,11 @@ Never `git rebase`, `git merge`, `git push --force`, or `git reset --hard` in an
 rewrites or discards history that somebody else may already be building on, and each is a silent
 success when it goes wrong. If a project's own git skill already forbids these, that refusal stands
 and this skill does not widen it: a narrower house rule always wins over this one.
+
+The one exception is a human asking for it: a rebase onto a freshly fetched base, then pushed with
+`--force-with-lease`, never bare `--force`, so a push that would overwrite someone else's work fails
+instead. If that rebase conflicts, abort it and hand the conflict back; resolving it stays a human's
+job.
 
 ## Cleanup, and when NOT to clean up
 

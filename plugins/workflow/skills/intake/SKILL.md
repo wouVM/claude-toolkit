@@ -82,6 +82,10 @@ nouns from the request and the diagnosis: OPEN tickets in the project, and CLOSE
 already scours relations (`workflow:issue` does), let it own the OPEN half rather than duplicating
 its logic, and run the CLOSED half here, which it does not cover.
 
+When the request asks for something to be built, search for the CAPABILITY as well as the request's
+words, in the tracker and in the code: "can we do X" often means "does X work yet", and the answer
+may be a shipped ticket or a flag that is already there.
+
 Then read the candidates and decide the relation IN CONTEXT, as ONE verdict rather than prose that
 hedges:
 

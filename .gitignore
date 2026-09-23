@@ -2,3 +2,4 @@ CVT*.md
 CVT*.html
 CVT*.pdf
 .DS_Store
+__pycache__/

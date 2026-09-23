@@ -42,6 +42,9 @@ spec itself, and where the spec is a ticket the same record posts as comments on
 where a ticket exists) and `sidecar` (the path pattern for the review file). A project whose
 tracker is noisy sets `post_comments: false` and keeps everything in the sidecar and the report.
 
+Before rewriting a ticket, read its status and history. A ticket already done or in progress means
+the instruction to rewrite it rests on a stale premise: stop and confirm before overwriting anything.
+
 ## The trail: the reasoning belongs where the ticket is
 
 Post the trail once, at the end of the run, when the spec is a ticket and the tracker supports
@@ -148,6 +151,10 @@ Nobody owns that unless you do. Mechanically:
    ticket, so a human who knows the system can falsify them in one read - the cheapest check
    available; make it easy.
 
+A claim about what an EXTERNAL system can or cannot do is verified against that system (its API or
+its docs), not against a comment in our code: that comment is hearsay. Re-probe anything a supplier
+called "planned" once the claim is older than a release cycle.
+
 Treat as **material, never triaged away on a body-only reading**, any finding of the form
 "which layer does this behavior actually live in?" or "this AC assumes X is config-driven /
 code-driven and that is unstated." A spec has shipped a whole rollout justified entirely by
@@ -175,6 +182,12 @@ clean: re-run the exhaust prompt on the updated spec; if two passes in a row pro
 DEFER/KILL fates and zero new DECIDEs, and every present-tense claim carries a citation, the
 spec is signable. Re-run the reconcile after ANY late edit - edits made after convergence are
 unreviewed by construction, and that is exactly where a bad premise gets in.
+
+The last step of signing: state the route on the ticket. Build directly, or design first and which
+trigger fired (more than one subsystem or about eight files, an external dependency added or
+removed, a data migration or stored-shape change, a contract other callers rely on, a new
+long-lived concept). When the behaviour ships through two pipelines (code, and config or content
+deployed separately), say which ships first or that they ship together.
 
 A run that stops without converging, on a budget or a blocker, still posts its trail, and adds the
 final comment naming what is open and why it stopped. A ticket that looks sharpened but is not is

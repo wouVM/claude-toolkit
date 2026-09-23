@@ -7,7 +7,7 @@ description: >
   project's verify command, put the diff through a bounded review loop with the project's own
   reviewers before it lands, and land only as far as that route's max_autonomy allows. Use when
   the user says "/pickup", "pick up the next ticket", "work the queue", "anything signed off
-  yet", "take FB-123", "review it before the PR", "run the reviewers on this branch", or
+  yet", "take PROJ-123", "review it before the PR", "run the reviewers on this branch", or
   schedules an unattended run over a tracker. Bootstraps its own labels: a preflight proves the
   tracker accepts the configured labels and that the poll query is well-formed before any poll
   runs, so nobody has to hand-apply a label to a real ticket to conjure it. Reads its policy from
@@ -26,6 +26,15 @@ project's reviewers and fixes what they ground in a file, and pushes as far as t
 says it may. The review loop is bounded on purpose: it gets a small number of rounds and then hands
 the work to a human rather than grinding. Everything it learns goes back ONTO THE TICKET, because by
 construction nobody is watching the session it runs in.
+
+## The ticket carries the trail
+
+The description is the contract: a change to scope or acceptance criteria is an EDIT to it, never a
+comment. Comments are the record of how the run got there, and they are required, posted as each
+thing happens rather than batched at the end: the claim (branch and worktree path), the verify
+result, each review round (findings, what changed, the re-verify), behavioural checks run, the PR
+link, and any stop with what a human must decide. A run that ends with no comments on its ticket is
+a defect in the run, not a tidy ticket.
 
 ## Step 0: the config, or stop
 
@@ -141,6 +150,10 @@ input, and the verify command runs again afterwards: a fix that breaks the suite
 defect it repaired. Never weaken or delete a test to clear a finding. That destroys the exact
 information this run exists to produce.
 
+**Fix by class, not by line.** A finding is a sample of a defect class. Grep the codebase for the
+class and fix every instance in one pass. If round N+1 raises the same class as round N, a line was
+fixed instead of the class.
+
 **A second round is allowed. A third is the wrong instrument.** When a fix fails a SECOND review
 round with a BRAND-NEW defect, one that round N-1's fix introduced, stop patching and run
 `review.taste_gate` (`springclean`, `gemini judge`) instead, and report its verdict on the ticket.
@@ -164,6 +177,16 @@ off for a project or a person:
 - `"plan"` - investigate, post the plan on the ticket, stop.
 - `"branch"` - fix, verify, commit, push. No PR.
 - `"pr"` - fix, verify, commit, push, open a PR via the project's configured `pr.skill`.
+
+The PR description is written for the reviewer, from `templates/pr-description.md` next to this
+SKILL.md: Why, Size (what actually needs review), Review in this order (one "Check:" line per item,
+highest risk first), Deploy, Verification, Not in this PR. Every number in it comes from
+`pr_test_stats.py` (shipped with `workflow:test-writing`) as it printed; never estimate one. When
+`pr.skill` has its own template, that template wins and these sections go into it.
+
+If the host's API answers 401 or 403, confirm with ONE direct API call that the credential is what
+failed, then push over SSH and hand the human the prefilled create-PR URL plus the description file.
+Never retry the same call hoping: a stale credential does not heal between attempts.
 
 Merging is not a level. There is no configuration that permits it.
 
