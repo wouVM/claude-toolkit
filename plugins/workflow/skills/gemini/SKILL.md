@@ -251,7 +251,9 @@ First prompt to Gemini (scope + this + ASK-CC protocol), written to `$GDIR/turn.
 > code, use ASK-CC. End with `VERDICT: PASS` (no P0/P1) or `VERDICT: FAIL` (has
 > P0/P1).
 
-Substitute the real `<RANGE>`. Then run the talk-back loop. When it finishes:
+Substitute the real `<RANGE>`. Append the neighbouring rules and contracts the change touches or
+could contradict, by name, with: "For each, say whether the new behaviour and this one can both
+hold." Then run the talk-back loop. When it finishes:
 - Present Gemini's findings verbatim, grouped by severity.
 - State the gate outcome plainly: PASS or FAIL, and if FAIL, the P0/P1 list that
   must be fixed. Do not soften it.

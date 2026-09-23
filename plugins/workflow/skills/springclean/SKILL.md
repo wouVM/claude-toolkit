@@ -69,7 +69,9 @@ smearing over a real sin.
 ## How to run it
 
 1. **Scope.** Name the exact commit range or diff under review (`git diff <base>..HEAD`). The panel reads the
-   repo itself; do not paste code.
+   repo itself; do not paste code. Name the neighbouring rules and contracts the change touches or could
+   contradict, by name, and ask whether the new rule and each old one can both hold: a panel that never
+   hears about the neighbour cannot see the contradiction.
 2. **Match the intensity to the stakes - do NOT over-run a taste check (the overdoing-it lens applies to
    THIS skill too).** For a small or routine diff, one reviewer sweeping all five lenses in a single pass - or
    just a `/gemini judge` - is enough; do not spin up a fleet to eyeball a few files. Reserve the FULL fan-out

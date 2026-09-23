@@ -14,4 +14,10 @@ Entry format:
 
 ## Recurring-pattern watchlist
 
-(none)
+Seeded by the toolkit as a starter; delete it if this project never reports status to anyone.
+
+- **(seeded) Status claim without proof** - a "live / fixed / covered by X" statement went to a
+  client, a sheet or a ticket on the strength of a ticket title; the safeguard it named covered a
+  different case, and the requester found the defect still there - every such statement names its
+  proof (the commit, the `file:line`, the production query and its result) and is checked against
+  the code, not the ticket title.

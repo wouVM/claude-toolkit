@@ -139,7 +139,11 @@ block, skip the loop too and SAY SO in the report: a project with no configured 
 and inventing one is worse than naming the gap.
 
 **Dispatch every reviewer in `review.reviewers` IN PARALLEL, in one message.** Each gets the commit
-range and reads the repo itself; none is ever handed pasted code. A configured reviewer is a skill
+range and reads the repo itself; none is ever handed pasted code. Each brief also names, by name,
+the existing rules and contracts the change touches or could contradict (the exception next to the
+new rule, the caller that relies on the old meaning), and asks for each whether the new rule and
+the old one can both hold. A reviewer who is never told about the neighbour reviews the new rule
+alone and passes a contradiction. A configured reviewer is a skill
 the project has (`codex review`, `gemini review`) or this plugin's `reviewer` agent, and reviewers
 are always dispatched fresh, never the agent that wrote the code. The builder does not review itself,
 including when the builder is the thing that just fixed a reviewer's finding.
@@ -179,13 +183,18 @@ off for a project or a person:
 - `"pr"` - fix, verify, commit, push, open a PR via the project's configured `pr.skill`.
 
 The PR description is written for the reviewer, from `templates/pr-description.md` next to this
-SKILL.md: Why, Size (what actually needs review), Review in this order (one "Check:" line per item,
-highest risk first), Deploy, Verification, Not in this PR. Every number in it comes from
-`pr_test_stats.py` (shipped with `workflow:test-writing`) as it printed; never estimate one. When
+SKILL.md, and the first reviewer may not be a developer. It opens with four plain sections: Why (the
+user or business problem), What changes (for each group the change reaches), How it was tested
+(including what could not be, and why), and Review in this order (one "Check:" line per item,
+highest risk first). The technical sections (Size, Deploy, Verification, Not in this PR) follow
+under Details. The title is `[<ticket>] - <plain description>`, never the branch name. Every number
+in it comes from `pr_test_stats.py` (shipped with `workflow:test-writing`) as it printed; never
+estimate one. When
 `pr.skill` has its own template, that template wins and these sections go into it.
 
 If the host's API answers 401 or 403, confirm with ONE direct API call that the credential is what
-failed, then push over SSH and hand the human the prefilled create-PR URL plus the description file.
+failed (the project's `tools-check.sh`, where `workflow:project-setup` seeded one, does this and
+also catches a malformed value before you blame the token), then push over SSH and hand the human the prefilled create-PR URL plus the description file.
 Never retry the same call hoping: a stale credential does not heal between attempts.
 
 Merging is not a level. There is no configuration that permits it.

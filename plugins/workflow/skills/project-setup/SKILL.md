@@ -5,8 +5,11 @@ description: >
   properly: a CLAUDE.md built from the conventions template (kernel mode, proportionality,
   lib-first, the trap book, the landing gates), the judge rubric at .claude/gemini-judge.md,
   the TRAPS.md trap book and FAULT-CATALOGUE.md skeletons, the testing rule at
-  .claude/rules/testing.md, and the .claude/settings.json entries that auto-install this
-  toolkit's plugins for everyone who clones the repo. Use in
+  .claude/rules/testing.md, optionally a Stop prompt-hook that checks the assistant finished
+  what was asked (and lets it wait on work it launched) and a read-only tools-check script that
+  says in plain words which integration credential is missing, malformed or rejected, and the
+  .claude/settings.json entries that auto-install this toolkit's plugins for everyone who clones
+  the repo. Use in
   a fresh or existing repo when the user says "/project-setup", "set up this project",
   "seed the conventions", "bootstrap claude for this repo", or "give this repo the toolkit
   setup". Merges with an existing CLAUDE.md, never overwrites one.
@@ -48,12 +51,20 @@ Ask via AskUserQuestion (multiSelect) which pieces they want:
 7. **The testing rule** at `.claude/rules/testing.md` (from `templates/testing-rule.md`), the floor
    the builder and `workflow:test-writing` follow: which tests earn their lines, one test per rule,
    and the test-to-code ratio a PR has to justify
+8. **The completion check** - a `Stop` hook of type `"prompt"` (from `templates/stop-hook.md`) that
+   reads the assistant's final message and sends it back only when an explicitly asked-for,
+   in-authority step was skipped
+9. **The tools check** at `scripts/tools-check.sh` (from `templates/tools-check.sh`), a read-only
+   script that checks each integration's credential (present, sane shape, one authenticated read)
+   and prints one plain line per check
 
 Default recommendation: all five of 1-5 for a fresh repo; for an existing repo with its own
 CLAUDE.md, recommend 2-5 plus a conventions MERGE. Offer 6 only where the project actually has a
 tracker that work arrives through: the pickup skills stop cleanly when the file is absent, so a
 half-filled one is worse than none. Recommend 7 wherever the repo has a test suite or is about to
-get one.
+get one. Offer 8 to anyone who runs long autonomous sessions; it is optional because a completion
+check is a judgment the team should choose. Recommend 9 wherever the work depends on a VCS host or a
+tracker reached with a token.
 
 ## Step 3: Seed
 
@@ -64,8 +75,10 @@ get one.
   (e.g. drop the migrations line for a repo with no database).
 - **Judge rubric**: fill the `<PROJECT-NAME>` and project-description placeholders; keep the
   dimensions intact. Write to `.claude/gemini-judge.md`.
-- **Ledgers**: write `TRAPS.md` and `FAULT-CATALOGUE.md` skeletons at the repo root (skip any
-  that already exist). Also seed an empty `DEFERRED.md` with a one-line header if the user took
+- **Ledgers**: write `TRAPS.md` and `FAULT-CATALOGUE.md` at the repo root (skip any that already
+  exist). Both ship with a few STARTER entries, shapes that recur across projects; keep the ones
+  that can apply to this project and delete the rest, since an entry that cannot apply is noise
+  the reader learns to skip. Also seed an empty `DEFERRED.md` with a one-line header if the user took
   the CLAUDE.md piece (it references the ledger).
 - **Team auto-install**: merge (never clobber) into `.claude/settings.json`:
 
@@ -134,6 +147,38 @@ get one.
   areas its bugs would actually hurt, the parametrize idiom of its test runner, and the boundaries
   it really mocks (read the existing tests for these). Drop a bullet that cannot apply, such as the
   migration line in a repo with no database.
+
+- **The completion check**: take the prompt text between the markers in `templates/stop-hook.md`,
+  trim its authorization-boundary line to this project's own boundaries (its external systems, its
+  production, its hand-offs to people), keep the waiting rule and "when in doubt, ALLOW" as they
+  are, and merge the entry into `.claude/settings.json` (JSON-escape the text: newlines become
+  `\n`):
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      { "hooks": [ { "type": "prompt",
+                     "prompt": "<the text from templates/stop-hook.md, ending in $ARGUMENTS>",
+                     "timeout": 30,
+                     "statusMessage": "Checking the work is finished" } ] }
+    ]
+  }
+}
+```
+
+  A cheap, fast model is enough for this judgment; where the harness accepts a `"model"` field on
+  a prompt hook, set it. Parse the merged file (`python3 -m json.tool`) before saying it is live.
+  Why the waiting rule is not optional: a check that blocks an assistant waiting on background work
+  it launched forces it through empty turns, which is exactly what happened before the rule existed.
+
+- **The tools check**: copy `templates/tools-check.sh` to `scripts/tools-check.sh` (or wherever the
+  repo keeps scripts), `chmod +x` it, and set `CHECKS` and the `*_VAR` names to the integrations and
+  environment variable NAMES this project actually uses; delete the checks it does not need. Leave the
+  prefix and length fields empty unless the vendor documents its current token format. Run it once
+  with `bash` and show the user the output. Tell them to run it before rotating any credential: a 401
+  that looks like an expired token was once a shell profile line joined to the next one, so the value
+  ended in `export`.
 
 ## Step 4: Report
 

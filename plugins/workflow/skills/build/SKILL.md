@@ -95,7 +95,10 @@ After a multi-agent rollout, grep for contradictions between the agents' edits (
 ways, a rename one of them missed) before calling it done: parallel agents cannot see each other's work.
 
 **7. Gate and land** the usual way: the independent code reviewers in parallel for a load-bearing diff, then
-ONE taste gate (`workflow:springclean`, or `workflow:gemini judge` for a routine one), then commit.
+ONE taste gate (`workflow:springclean`, or `workflow:gemini judge` for a routine one), then commit. Every
+review brief names the neighbouring rules and contracts the change touches or could contradict, by name, and
+asks for each whether the new rule and the old one can both hold: a reviewer never told about the exception
+next door reviews the new rule alone and passes the contradiction.
 
 ## What stays the coordinator's, always
 

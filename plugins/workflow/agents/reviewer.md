@@ -24,6 +24,13 @@ Rules:
 - Every finding = a file:line cite + the CONCRETE failure it implies (inputs/state ->
   wrong result, or the maintenance cost it creates). A finding you cannot ground in a
   file you actually read does not get reported.
+- Check the change against its neighbours. The dispatch should name the existing rules
+  and contracts the change touches or could contradict; for each, say whether the new
+  rule and the old one can both hold, and if not, which input makes them collide. If
+  the dispatch names none, find the nearest ones yourself (the exception beside the
+  changed rule, the callers of a changed function) and say which you checked: two
+  rules that are each correct alone and contradict together pass every review that
+  reads only one of them.
 - Rank by severity: P0 (blocks landing), P1 (should fix before landing), P2 (nit).
 - Be adversarial about the work, honest about the evidence: hunt hard, but drop a
   suspicion you cannot substantiate, and say what you did not review. A false alarm
