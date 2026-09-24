@@ -72,6 +72,27 @@ subscription) for `gemini`. Skills degrade gracefully and tell you what is missi
 
 ## Changes
 
+### workflow 0.10.0
+
+Answers to three questions from a product lead's review: do the agents have the real context, how do
+we catch what they leave out, and how do we test the process itself.
+
+- `intake` fetches the whole source (mail thread, sheet row, transcript) and quotes the reporter's own
+  words in the ticket, kept apart from what anyone assumed.
+- `spec-sharpen`: a blind lens writes the ticket from the raw request without seeing our draft, and
+  the differences become findings; every lens returns at most five findings, ranked by "would a user
+  notice?"; a ready check (testable criteria, route, deploy order, what staging cannot prove, the
+  activation step, no open questions) and a plain ELI5 are posted before signing.
+- `pickup` reads that ready check. With `"require_ready_check": true` (new projects get it from the
+  template) it refuses a ticket without a passing one; otherwise it warns once and proceeds, so
+  projects with tickets signed before 0.10.0 keep working.
+- `spec-sharpen/evals/`: the format and run procedure for process evals: past tickets with known
+  misses, rerun on their original drafts whenever the flow changes, scored by a fresh judge.
+- `issue` files escapes: a defect found after signing, with the one step that should have caught it
+  (a fixed list of step keys) and a 30-day count by step.
+- `springclean` asks at review close whether each new trap is true of projects in general, and if so
+  proposes it for the starter TRAPS / FAULT-CATALOGUE as its own change.
+
 ### workflow 0.9.0
 
 - `coordinate`: a new skill for the chat that owns a multi-chat release, from the session-state file to

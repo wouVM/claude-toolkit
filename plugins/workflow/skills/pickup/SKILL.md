@@ -41,9 +41,10 @@ a defect in the run, not a tidy ticket.
 Read `.claude/pickup.json` from the repo root. Everything policy-shaped lives there: the tracker and
 its statuses, the repos and their base branches, the worktree root, the verify command, the
 diagnosis kinds, the route per kind, the PR skill, and the `review` block (which reviewers to run,
-which taste gate to escalate to, how many rounds are allowed). If it is absent, print the fields that
-would be needed and stop. Do not improvise a tracker query, a base branch, or a fix path: this skill is
-identical in every project and only the config makes it correct in one.
+which taste gate to escalate to, how many rounds are allowed), and `require_ready_check` (whether a
+signed ticket without a passing ready check is refused, see Step 2). If the file is absent, print the
+fields that would be needed and stop. Do not improvise a tracker query, a base branch, or a fix
+path: this skill is identical in every project and only the config makes it correct in one.
 
 ## Step 1: PREFLIGHT the labels and the query
 
@@ -80,7 +81,7 @@ Find candidates: in `signed_status`, carrying `pickup_label`, with no linked PR 
 `in_flight_label`. Shaped as JQL:
 
 ```
-project = FB AND status = "Ready for Dev" AND labels = "auto-fix"
+project = <KEY> AND status = "Ready for Dev" AND labels = "auto-fix"
   AND labels != "in-flight" AND issueFunction not in linkedIssuesOf("...")
 ```
 
@@ -88,6 +89,27 @@ Use the project's tracker MCP or CLI, and use the query the preflight already pr
 Take ONE ticket unless the user explicitly asked for more. Polling writes nothing, to the tracker or
 the repo, so a poll that finds nothing is a clean no-op and a safe thing to run on a schedule, which
 it only is because the preflight has already ruled out the other reason a query returns nothing.
+
+**Signed is not enough: the ticket also needs a passing ready check.** Before claiming, read the
+ticket's comments for the latest `READY CHECK` block that `spec-sharpen` posts, and parse only from
+its `READY CHECK:` line to the first blank line. It passes only when the header says `pass` AND all
+six keys (`testable-criteria`, `route`, `deploy-order`, `staging-limits`, `activation`,
+`open-questions`) are present, each marked `[pass]` (in any order), and the blank line after them is followed by a non-empty `ELI5:` line. Anything else fails: no block, a `fail` header,
+a missing or `[fail]` key, a missing ELI5, or a description edited after the block was posted. What happens then
+depends on `require_ready_check`:
+
+- `true`: do not claim. Post one comment, `Refused: no passing ready check. Failing: <each failing
+  or missing key, or "no ready check on this ticket", or "description edited after the ready
+  check">. Re-run spec-sharpen and sign again.`, then move to the next candidate.
+- absent or `false`: post the same lines once as a warning (`Warning: no passing ready check.
+  Failing: ...`) and proceed to the claim. This keeps projects that signed tickets before the ready
+  check existed working; new projects get `true` from the setup template.
+
+The refusal is the only write before a claim, and either comment is posted once: a later poll that
+finds the same comment on an unchanged ticket does not post it again. Read the trail comment, never
+re-run the sharpening here. Why: the signature says a human agreed, the ready check says there was
+something complete to agree to, and an unattended run that sharpens its own ticket is signing it on
+the human's behalf.
 
 ## Step 3: CLAIM, before any work
 

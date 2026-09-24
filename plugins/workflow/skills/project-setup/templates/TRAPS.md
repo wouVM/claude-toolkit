@@ -11,6 +11,8 @@ The rules (they keep the book usable):
   wording, note that it recurred) and adds no incident. A fixed one-off is just fixed.
 - Never append a round's diary. The instrument is readability, not length: if one shape appears
   five times, consolidate BEFORE adding.
+- A shape that is true of projects in general goes upstream too: propose its general form for the
+  toolkit's starter book (springclean's "is this general?" step), so the next project starts with it.
 
 ## The shapes
 

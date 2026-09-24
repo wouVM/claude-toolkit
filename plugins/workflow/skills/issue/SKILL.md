@@ -6,11 +6,14 @@ description: >
   so a loose thought becomes a tracked, referenceable `gh#N`. Use whenever the user wants to
   capture / file / open / track an issue for something, retain an idea, turn an escalation or
   brainfart into a tracked item, or amend an existing one. On filing it classifies the item
-  (idea / escalation / bug / task / architecture) and ASKS if the category is unclear, scours open
-  issues for duplicates and relations and proposes a merge or link BEFORE creating, then
-  replies with the `gh#N` handle, its URL, and the label. Triggers on "/issue", "file this",
-  "open an issue for this", "capture this", "track this idea", "log this escalation", "amend
-  gh#N by ...". NOT for reviewing code or for filing to an external bug tracker.
+  (idea / escalation / bug / task / architecture / escape) and ASKS if the category is unclear,
+  scours open issues for duplicates and relations and proposes a merge or link BEFORE creating,
+  then replies with the `gh#N` handle, its URL, and the label. An `escape` (a defect found after a
+  ticket was signed) records the flow step that should have caught it, and `/issue escapes` counts
+  them per step. Triggers on "/issue", "file this", "open an issue for this", "capture this",
+  "track this idea", "log this escalation", "this escaped", "count escapes", "amend gh#N by ...".
+  NOT for reviewing code, and NOT for filing to an external bug tracker (escapes excepted, which
+  follow the project's tracker).
 allowed-tools: Bash, Read, Write, AskUserQuestion
 ---
 
@@ -21,9 +24,21 @@ stops living only in a chat and joins the tracked web of work. Two jobs the raw 
 create` does not do, and the reason this skill exists: (1) it CLASSIFIES the item, and (2) it
 finds how the item RELATES to what is already filed and links it, so the web builds itself
 instead of every capture landing as an orphan. The text is filed AS-IS; the skill authors only
-the title, the label, and the links.
+the title, the label, and the links (and, for an escape, its three-line record).
 
-## Step 0: Preflight
+## Step 0: Mode and tracker, then the GitHub preflight
+
+`/issue amend <ref> ...` (or "amend / add to / correct gh#N") adds to an existing issue: see
+"Amend" below. `/issue escapes` (or "count escapes", "which step leaks") files nothing: see "Count
+escapes" below. Otherwise file a NEW issue (Steps 1 to 5).
+
+Then read `tracker.kind` from `.claude/pickup.json` if the file exists. Absent, or `github`, means
+everything below is GitHub-backed. Why this comes first: an escape follows the project's tracker,
+and a project without `gh` must not stop at a GitHub check it will never use.
+
+Run the preflight below only for GitHub-backed work. On another tracker, counting escapes and filing
+an escape skip it; filing anything else and amending still go to GitHub, so for a new item run the
+preflight once Step 2 has classified it as not an escape.
 
 ```bash
 command -v gh >/dev/null 2>&1 || echo "GH_MISSING"
@@ -41,11 +56,6 @@ Everything below uses `gh` so it is portable. If this session also has the `gith
 `state_reason:"duplicate"` + `duplicate_of` close (a real, queryable GitHub relationship) instead
 of the `gh` fallback; prefer it when present, but never assume it is.
 
-## Mode: new (default) or amend
-
-`/issue amend <ref> ...` (or "amend / add to / correct gh#N") adds to an existing issue: see
-"Amend" below. Otherwise file a NEW issue (Steps 1 to 5).
-
 ## Step 1: Get the content
 
 In order: a file if the argument is a path or `@path`; the text following `/issue`; the
@@ -56,15 +66,38 @@ Hold the raw content UNCHANGED - it is the body's core. Do not summarize or refl
 
 HARD RULE first: **NEVER file an item that is already done / solved / resolved.** Git history
 is its record; a closed issue for finished work is noise. If asked to file something
-already handled, say so and skip.
+already handled, say so and skip. The one exception is an `escape`: file it even when the defect is
+fixed, and close it on filing if nothing is left to do. Why: its record is about the step that
+leaked, and fixing the defect does not fix the step.
 
 Pick ONE label from the FIXED set (deliberately small - do NOT invent new labels, and NO cross-cutting
 or area/subsystem labels): `idea` (a suggestion / design thought / feature wish), `escalation` (a
 user-filed "this behaved wrong"), `bug` (a concrete defect), `task` (a discrete unit of work),
-`architecture` (an open architecture decision to settle). These overlap on purpose (an escalation is
-very often really an idea) - pick the dominant intent. (A 6th label, `epic`, exists on the same KIND
-axis for a roadmap tracking-parent, but it is NEVER a `/issue` target: epics are created deliberately
-when structuring the roadmap, not from a captured item. So `/issue` only ever picks from the five above.)
+`architecture` (an open architecture decision to settle), `escape` (a defect found AFTER a ticket was
+signed that the flow should have caught earlier: a failed re-test by the requester, a staging failure,
+a production failure). These overlap on purpose (an escalation is very often really an idea) - pick
+the dominant intent. An escape is also a bug; pick `escape` whenever there is a signed ticket it
+escaped from, because only that kind gets counted per step. (One more label, `epic`, exists on the
+same KIND axis for a roadmap tracking-parent, but it is NEVER a `/issue` target: epics are created
+deliberately when structuring the roadmap, not from a captured item. So `/issue` only ever picks from
+the six above.)
+
+An escape carries a record the plain kinds do not, and it is not filed without all three lines:
+
+```
+Escaped from: <ticket ref>
+Found: <what was found>, at <where: the re-test, staging or production, with the link or evidence>
+Should have been caught at: <step>
+```
+
+`<step>` is exactly ONE of these values, and its label is `caught-at:<value>`: `intake`, `lens-tpm`,
+`lens-blind`, `lens-dev`, `lens-exhaust`, `premise-reconcile`, `ready-check`, `eli5`, `build-tests`,
+`review-panel`, `staging-test`, `activation-check`, `not-catchable`. With `not-catchable` the line
+adds "because <reason>". Why: an escape without its step is just a bug, the step is the thing a
+monthly count needs, and a free-text step splits one leak across several spellings so the count
+stops adding up. If the step is unclear, ask via AskUserQuestion with the two or three plausible
+values as options, exactly as for an unclear label; a guessed step points the fix at the wrong part
+of the flow.
 
 One cross-cutting marker exists OUTSIDE the KIND axis: `client`. When the capture is client-engagement
 work (a specific client's asks, notes, or demo prep), ADD `client` alongside the KIND label - it
@@ -128,6 +161,13 @@ BODY=$(mktemp "${TMPDIR:-/tmp}/issue-XXXXXX.md")
 gh label create "<label>" --repo "$REPO" 2>/dev/null || true   # idempotent
 ```
 
+For an `escape`, put its three-line record at the top of the body, above the content, and add a
+second label `caught-at:<value>` beside `escape` (for example `caught-at:ready-check`), created the
+same idempotent way. The `Escaped from:` ticket counts as a `related` link. If the tracker read in
+Step 0 is not GitHub, file the escape there instead, with the same record and labels, through that
+tracker's own tool. Why: an escape belongs
+beside the ticket it escaped from, or nobody reading that ticket learns it leaked.
+
 Then, per the confirmed verdict:
 - **duplicate (user chose amend)**: do NOT create a new issue. Go to Amend on `gh#N` with this content.
 - **related**: add a `Relates to: #N` line to the body (bare `#N` so GitHub auto-links it in-repo),
@@ -160,6 +200,25 @@ gh issue comment "$N" --repo "$REPO" --body-file "$BODY"
 
 Report: "Amended `gh#N` (comment added): <URL>".
 
+## Count escapes
+
+`/issue escapes` shows which step leaks: escapes created in the last 30 days, grouped by their
+`caught-at:` label, most first. Run it monthly; a step that tops the list twice running is where
+the flow needs a new check.
+
+```bash
+SINCE=$(date -u -v-30d +%Y-%m-%d 2>/dev/null || date -u -d '30 days ago' +%Y-%m-%d)
+gh issue list --repo "$REPO" --label escape --state all --search "created:>=$SINCE" \
+  --limit 500 --json labels --jq '
+  map([.labels[].name | select(startswith("caught-at:"))][0] // "caught-at:(missing)")
+  | group_by(.) | map({step: .[0], escapes: length}) | sort_by(-.escapes)'
+```
+
+A `caught-at:(missing)` row is an escape filed without its step: fix the record, do not drop it. On
+another tracker, read `tracker.kind` and the project key from `.claude/pickup.json` and run the same
+query in that tracker's own search (label `escape`, created in the last 30 days, grouped by the
+`caught-at:` label or field); do not assume which tracker it is.
+
 ## The `gh#N` handle
 
 Reference every filed issue as `gh#N` (short, and unmistakably a GitHub issue rather than a Claude
@@ -168,7 +227,7 @@ so GitHub auto-links it in-repo; use `gh#N` everywhere else (chat, prose, CLAUDE
 
 ## Notes
 
-- Files text AS-IS; the skill authors only the title, the label, and the links.
+- Files text AS-IS; the skill authors only the title, the label, and the links (plus an escape's record).
 - Relations use GitHub's native types: `duplicate_of` (via the MCP or a re-file-as-amend),
   parent/sub-issue, and `Relates to: #N` for the soft "intertwined" case GitHub has no formal
   link for. Do not hand-roll a bespoke relationship store.

@@ -101,6 +101,15 @@ smearing over a real sin.
 - A sin that RECURS gets an entry in the project's fault catalogue (`FAULT-CATALOGUE.md`, if the project
   keeps one) so `/gemini judge` and future lentekuisen can catch the repeat. The same fault repeated unlogged
   is the real failure.
+- **Is this general?** For each trap or fault entry this close added or sharpened, ask whether it is true
+  of projects in general, not just this one. If yes, write it once more in general form (no project,
+  client or product names: the mechanism, the tell and the check) and propose it for the toolkit's
+  starter file (`project-setup/templates/TRAPS.md` for a failure shape,
+  `project-setup/templates/FAULT-CATALOGUE.md` for a process fault) as its own small change for the
+  toolkit owner to accept, never inside this project's diff. Why: a lesson kept in one project's book protects one project, and the starter files are how the
+  next project begins already knowing it. When the entry came from an escape (`workflow:issue`, kind
+  `escape`), its "should have been caught at" step is where the new rule goes: propose it as a check that
+  step runs, as well as the entry.
 
 ## Relationship to the other gates (so nobody double-counts)
 

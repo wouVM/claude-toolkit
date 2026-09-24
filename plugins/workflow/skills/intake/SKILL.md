@@ -36,9 +36,17 @@ absent, say exactly which fields you would need and stop: guessing a tracker pro
 ticket into somebody else's board, and inventing a diagnosis kind produces a verdict that
 `workflow:pickup` cannot route.
 
-## Step 1: symptom versus inference
+## Step 1: the whole source, then symptom versus inference
 
-Restate the request as two separate lists, in the requester's own words where you can.
+If the request points at a source this session can reach (a mail thread, a spreadsheet row, a call
+transcript, a chat thread), fetch the WHOLE source first, not the forwarded fragment. Why: a forward
+is somebody's summary, and the detail that decides the diagnosis (the earlier message, the second
+example, the date) is often the part they cut. A long source goes through `workflow:digest`, so you
+get the passages that matter rather than the whole dump. If the source cannot be reached, say so in
+the ticket ("working from a forwarded excerpt, the original thread was not reachable") instead of
+paraphrasing it from memory: a paraphrase reads like evidence and is not.
+
+Then restate the request as two separate lists, in the requester's own words where you can.
 
 - **Symptom**: what they observed. "No confirmation email arrived." "It answered in English."
 - **Inference**: what they concluded caused it. "The prompt is wrong." "The integration is down."
@@ -124,6 +132,12 @@ that someone who never reads the diff could check.
 
 Put the PREMISES at the top, as a short list with their citations. A human who knows the system can
 then falsify the ticket in one read, which is the cheapest review available anywhere in this chain.
+
+Whatever the format, the evidence quotes the reporter verbatim: short quotes, only the passages that
+carry the symptom, each with its source named (the thread and date, the sheet row, the transcript
+timestamp). Keep those quotes apart from what anyone assumed, the reporter and us included. Why:
+every lens and builder downstream reads the ticket, never the source, so the reporter's own words
+are the one piece of evidence they cannot recover once our summary replaces it.
 
 ## Step 5: sharpen
 

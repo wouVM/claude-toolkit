@@ -2,11 +2,13 @@
 name: spec-sharpen
 description: >
   Sharpen a spec, ticket, issue, or requirements doc through independent multi-pass review
-  until it is SIGNABLE: a fresh-agent TPM lens, a code-grounded dev lens, a cold exhaust
-  pass, and a mechanical premise reconcile (every present-tense claim about current system
-  behavior gets a file:line citation or gets reworded out), with DECIDE/DEFER/KILL triage
-  and a convergence stop rule. This is the spec-side landing gate that makes spec-driven
-  development real: defects caught here never reach the build. It leaves the reasoning as a
+  until it is SIGNABLE: a fresh-agent TPM lens, a blind lens that never sees the draft, a
+  code-grounded dev lens, a cold exhaust pass, and a mechanical premise reconcile (every
+  present-tense claim about current system behavior gets a file:line citation or gets reworded
+  out), each lens capped at five ranked findings, with DECIDE/DEFER/KILL triage, a convergence
+  stop rule, then a ready check and a plain explanation for the person who signs. This is the
+  spec-side landing gate that makes spec-driven development real: defects caught here never
+  reach the build. It leaves the reasoning as a
   comment trail on the ticket, one comment per lens carrying each finding's fate plus one for
   the cited premises, so a DEFERRED or KILLED finding stays reviewable instead of vanishing.
   Works on a Jira ticket (via
@@ -26,7 +28,8 @@ a diff gets: independent lenses, adversarial passes, and a convergence rule.
 **Fresh agents are the mechanism.** A model defends the reasoning it just produced; a cold one
 argues with it. Never run a lens inside the context that drafted the spec. You (the
 orchestrator) own the end result and make the edits; each lens is a fresh agent dispatched
-via the Agent tool with the spec BODY only, never the drafting conversation.
+via the Agent tool with the spec BODY only, never the drafting conversation (the blind lens gets
+even less: the raw request only).
 
 ## Step 0: Locate the spec and its home
 
@@ -52,9 +55,9 @@ comments. Use the tracker's own comment API through whatever MCP or CLI the proj
 (`addCommentToJiraIssue`, `gh issue comment`); this skill orchestrates and does not build a
 tracker client.
 
-**One comment per lens** (TPM, dev, exhaust), naming the lens and listing each finding with its
-fate. A `DECIDE` gets one line saying where it landed in the body. A `DEFER` gets its reason and
-the condition that would reopen it. A `KILL` gets why it was noise.
+**One comment per lens** (TPM, blind, dev, exhaust), naming the lens and listing each finding with
+its fate. A `DECIDE` gets one line saying where it landed in the body. A `DEFER` gets its reason
+and the condition that would reopen it. A `KILL` gets why it was noise.
 
 The DEFER and KILL entries are the load-bearing ones. A DECIDE is already visible in the ticket
 body, so a comment about it mostly repeats the spec, but a dismissal that leaves no trace is
@@ -66,6 +69,9 @@ with its reason stays reviewable by the person who turns out to have been right.
 about how the system behaves today, each with its `file:line` citation. This is the comment a
 human who knows the system can falsify in one read, which is the cheapest check available
 anywhere on the ticket.
+
+**One comment for the ready check and the ELI5**, the last thing posted before the ticket is
+offered for signing (both are described below).
 
 **A final comment only if the loop ended without converging**, saying what is still open and why
 it stopped.
@@ -100,7 +106,21 @@ travel: a mechanism detail may never migrate out of a comment and into an accept
 When you fold a comment's finding into the body, restate it as the observable outcome it implies
 and leave the mechanism behind in the comment.
 
-## Round 1 - TPM lens (fresh agent)
+## The lens contract: five findings, ranked
+
+Every lens brief ends with this contract, word for word:
+
+> Return at most FIVE findings, ranked by "would a user, a client or an end customer notice this
+> if it shipped as written?", most noticeable first, each with one line of why. Anything below the
+> fifth is dropped, not appended as "minor".
+
+Why: a lens that returns fifteen findings buries the one that matters, and the human signing starts
+deleting lines instead of reading them. The cap loses nothing that counts: the stop rule re-runs the
+passes, so a real finding below the cut comes back once the ones above it are decided. The premise
+reconcile and the ready check are not lenses and are not capped, because they are complete lists by
+design.
+
+## Round 1 - TPM lens (fresh agent) · `lens-tpm`
 
 Give the agent the spec body only, and this lens:
 - Scope boundaries: what is explicitly out? Any requirement claimed both in and out?
@@ -112,7 +132,26 @@ Give the agent the spec body only, and this lens:
 
 Bar: **could this be signed off without reading the diff?**
 
-## Round 2 - Dev lens (fresh agent, code-grounded)
+## Round 1b - Blind lens (fresh agent, never sees the draft) · `lens-blind`
+
+Dispatch it in the same message as Round 1, once per sharpening run. Give it ONLY the raw request:
+the reporter's own words and evidence as intake captured them, never our draft or our title. Ask it
+to write the ticket it would write: outcomes and acceptance criteria, under the same outcomes-only
+rule as the body.
+
+Then you diff the two, item by item. Every outcome, criterion, edge case or constraint present in
+one and absent from the other is a candidate omission: one only the blind ticket has may be a thing
+our draft never framed, one only our draft has may be a thing nobody asked for. Rank the candidates
+by the lens contract, keep five, and triage them like any finding.
+
+Why: every other lens reads our draft, so they all inherit its framing. The blind lens is the only
+one that can notice the thing the draft never framed.
+
+If there is no raw request apart from the draft (the spec was written from scratch), do not run the
+blind lens; post its trail line as `blind lens: skipped, no raw request apart from the draft`. A
+blind lens fed the draft is just another TPM lens.
+
+## Round 2 - Dev lens (fresh agent, code-grounded) · `lens-dev`
 
 FIRST dispatch a read-only code scan (this plugin's `explorer` agent) for the facts the lens
 needs: the models and paths touched, existing flags and options, migration surface,
@@ -128,7 +167,7 @@ deletion/anonymization paths. THEN a fresh agent applies, with the scan results 
 
 Bar: **could a builder execute this without coming back with questions?**
 
-## Round 3 - Exhaust (fresh agent, cold)
+## Round 3 - Exhaust (fresh agent, cold) · `lens-exhaust`
 
 A fresh agent that has seen NONE of the prior rounds gets the CURRENT spec body and exactly
 this prompt:
@@ -136,7 +175,9 @@ this prompt:
 > "Enumerate everything this doesn't decide and every way it can break. Keep going until
 > exhausted; organize by category."
 
-## Round 4 - Premise reconcile (you, the orchestrator - NOT an agent)
+followed by the lens contract. It searches until exhausted and returns the five that rank highest.
+
+## Round 4 - Premise reconcile (you, the orchestrator - NOT an agent) · `premise-reconcile`
 
 The lenses' blind spot: they are given the spec body only, so **a false claim about how the
 system works today passes all of them unchallenged**. Round 2 sees code, but it is asked what
@@ -180,26 +221,81 @@ because Y") so the spec is signable either way.
 Done when **two consecutive further passes change no decision** AND the premise reconcile is
 clean: re-run the exhaust prompt on the updated spec; if two passes in a row produce only
 DEFER/KILL fates and zero new DECIDEs, and every present-tense claim carries a citation, the
-spec is signable. Re-run the reconcile after ANY late edit - edits made after convergence are
-unreviewed by construction, and that is exactly where a bad premise gets in.
-
-The last step of signing: state the route on the ticket. Build directly, or design first and which
-trigger fired (more than one subsystem or about eight files, an external dependency added or
-removed, a data migration or stored-shape change, a contract other callers rely on, a new
-long-lived concept). When the behaviour ships through two pipelines (code, and config or content
-deployed separately), say which ships first or that they ship together.
+spec goes to the ready check. Re-run the reconcile after ANY late edit - edits made after
+convergence are unreviewed by construction, and that is exactly where a bad premise gets in.
 
 A run that stops without converging, on a budget or a blocker, still posts its trail, and adds the
 final comment naming what is open and why it stopped. A ticket that looks sharpened but is not is
 the one case where the trail is worth more than the spec.
+
+## Ready check (you, mechanically, before the ticket is offered for signing) · `ready-check`
+
+Once the stop rule is met, check the body line by line. The ticket is ready only when ALL hold:
+
+1. `testable-criteria`: every acceptance criterion is testable, a named test or a named check in
+   production can pass or fail it.
+2. `route`: the route is stated, build directly, or design first and which trigger fired (more
+   than one subsystem or about eight files, an external dependency added or removed, a data
+   migration or stored-shape change, a contract other callers rely on, a new long-lived concept).
+3. `deploy-order`: where the change ships through more than one pipeline (code, and config, content
+   or prompts deployed separately), which ships first, or that they ship together; otherwise "one
+   pipeline".
+4. `staging-limits`: what staging cannot prove is stated, with how it will be checked in production.
+5. `activation`: the activation step is named (the config, credential, external connection or first
+   real event that makes it switched on), or "none" with why.
+6. `open-questions`: no open question is left, every DECIDE has its answer in the body.
+
+A line passes only with a location, the section of the body where it holds; a pass nobody can point
+to is a fail. Why: a ticket can converge and still be unready, because the lenses judge the
+requirements, not whether the ticket carries what the release needs, and done means switched on,
+not merged.
+
+Post the result as one comment in exactly this shape, because `pickup` parses it:
+
+- first line `READY CHECK: pass` or `READY CHECK: fail`, and `pass` only when all six lines pass;
+- then exactly six lines, one per key above, in that order: `[pass] <key>: <where in the body>` or
+  `[fail] <key>: <what is missing>`;
+- then one blank line;
+- then `ELI5:` and the explanation (next section).
+
+```
+READY CHECK: fail
+[pass] testable-criteria: Acceptance criteria, AC1 by a named test, AC2 by a check in production
+[pass] route: Route, design first, trigger: data migration
+[pass] deploy-order: Deploy, code first, then config
+[fail] staging-limits: not stated
+[pass] activation: Activation, none, nothing new to switch on
+[pass] open-questions: none left, every DECIDE answered in the body
+
+ELI5: ...
+```
+
+Why the fixed shape: a checklist a machine reads is a contract, and a renamed key or a missing line
+would otherwise read as a pass.
+
+A fail is fixed in the body and the check runs again. That fix is a late edit, so the stop rule's
+re-run of the reconcile applies to it. `pickup` refuses a signed ticket whose latest ready check is
+missing or failing (where the project sets `require_ready_check`), so this block is what lets the
+ticket be built.
+
+## ELI5 for the person who signs (the last step) · `eli5`
+
+Write a plain explanation for whoever signs: who needs this, what changes for them, why now, and
+how we will know it worked. A few short sentences a non-developer follows, no jargon.
+
+It is a test as much as a summary. If it cannot be written without hedging, without contradicting
+the body, or without jargon, the ticket is not ready: say which part failed (which question, which
+section of the body) and send it back through triage. Why: the signer reads this, not the body, and
+a ticket that cannot be explained plainly is one whose author does not yet know what it does.
 
 ## Non-negotiables
 
 - An AC that silently orders a subsystem that does not exist is a spec bug: reword to the
   guarantee that is actually buildable and push the subsystem to Out of scope.
 - Every AC needs a black-box observable; "the internal state contains X" is not one.
-- Match intensity to stakes: a two-line bugfix ticket gets one combined lens pass and the
-  reconcile, not four rounds. The full flow is for specs a builder will run with.
+- Match intensity to stakes: a two-line bugfix ticket gets one combined lens pass, the reconcile
+  and the ready check, not four rounds. The full flow is for specs a builder will run with; the
+  ready check is never skipped, because pickup refuses or flags a ticket without one.
 
 ## Relationship to the other gates
 
@@ -207,3 +303,8 @@ This is the SPEC-side gate; the diff-side gates (independent code reviews + one 
 still apply to the code the spec produces. If the machine has a spec-authoring skill (e.g. a
 /spec flow that turns vague intent into a draft), author there first - this skill hardens a
 draft, it does not create one from nothing.
+
+## When this skill changes
+
+When you change this skill or `intake`, run the process evals in `evals/` (format and run in
+`evals/README.md`). A change to a review process is untested until it has caught a known miss again.
