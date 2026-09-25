@@ -109,5 +109,60 @@ On a finished chunk of work or a load-bearing diff:
    and file every open TODO the round leaves as a gh issue. Report what shipped, and every
    adhockery (propose fixes, never leave rot).
 
+<DELETE the next two sections unless the project took the production read-only piece. Fill every
+slot from docs/runbooks/prod-readonly-access.md once the admin steps are done; never paste a
+password, key or connection string with a password into this file.>
+
+## Reading production (READ-ONLY)
+
+Status: <NOT ACTIVE YET: waiting on the admin steps in docs/runbooks/prod-readonly-access.md |
+ACTIVE since <DATE>, read-only verified>. While it says NOT ACTIVE, do not read production at
+all, by any credential.
+
+Production is readable and CANNOT be written from this machine. That is deliberate, not a
+misconfiguration, and not something to work around.
+
+- Identity: <RO-IDENTITY: the read-only cloud identity, and what it may do (connect to the database,
+  read logs, read the one read-only secret)>. The human's personal login and application-default
+  credentials are revoked on purpose.
+- Database login: <RO-DB-ROLE>: SELECT only, `default_transaction_read_only = on`. Verified
+  <DATE> from the privilege catalogue, never by attempting a write: <VERIFIED-READ-ONLY: the step 8
+  result, e.g. "default on; no write path: 0 relations, 0 sequences, 0 schemas with CREATE, 0
+  SECURITY DEFINER functions, no role attributes">.
+- Never test the read-only guard by writing, not even a rolled-back or temporary write. The
+  catalogue check is the test.
+- Connect: <CONNECT-COMMAND: how to fetch the read-only settings into a local file and start the
+  proxy if it is not running, as a copy-paste block>
+- Run a query: <QUERY-RUNNER: the command that runs a read-only SQL or shell script against those
+  settings>
+- Check it still works: `bash scripts/tools-check.sh` (the `prod-db` check).
+
+The fixed rules:
+
+- **Never look for a read-write credential.** Not in env files, secret stores, shell history,
+  password managers, or other checkouts. If something needs more than SELECT, that is the answer:
+  it is not yours to do.
+- **Never ask the human to log in just to read something.** Everything readable works as-is
+  through the read-only path. A read that fails is a finding to report, not a reason to escalate
+  credentials.
+- **Anything that writes to production is the human's act**: enqueueing a job, fixing a row, a
+  migration, a config change, a redeploy. Report exactly what needs doing, with the command, and
+  stop.
+- **Never print credentials or personal data.** Do not echo a secret, a settings file or a
+  connection string. Query for counts, ids and the columns the question needs; do not paste names,
+  e-mails, phone numbers or message contents into chat, tickets, commits or docs. Quote an id and
+  say where the row lives instead.
+- Full setup and who does what: `docs/runbooks/prod-readonly-access.md`.
+
+## Reading logs
+
+- Command: <LOG-COMMAND: the log read under the read-only identity, e.g. a cloud CLI log query with
+  the project, a filter, --limit and --freshness>
+- Always filter narrowly (service, severity, a request or conversation id) and keep `--limit` small;
+  widen only when the first read shows it is needed.
+- Log lines carry personal data and sometimes tokens: summarise what they show (counts, error
+  types, timestamps, ids), never paste raw lines into a ticket or chat.
+- Check it still works: `bash scripts/tools-check.sh` (the `logs` check).
+
 <PROJECT-SPECIFIC: deploy rings / environments, standing authorizations, and the hard lines
 (what must NEVER be touched without an explicit owner go). Delete this placeholder if none.>

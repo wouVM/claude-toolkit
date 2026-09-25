@@ -13,8 +13,8 @@
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "The landing-gate workflow: /gemini second-opinion reviews, /springclean taste panels, /spec-sharpen requirements gate with its append-only lens comment trail, /build and /digest role-boundary paths (with a separate test writer and a comment pass after every build), /test-writing, /issue capture, the /intake-signature-/pickup ticket chain with relation and regression scanning and a comment trail on every ticket, self-bootstrapping pickup labels, a bounded reviewer loop and /worktree isolation, /coordinate for one chat that owns a multi-chat release, /project-setup to seed conventions plus the role-fence hook, the pickup policy, the testing rule, an optional Stop-hook completion check and a read-only tools check, and the explorer/builder/reviewer agents",
-      "version": "0.10.0"
+      "description": "The landing-gate workflow: /gemini second-opinion reviews, /springclean taste panels, /spec-sharpen requirements gate with its append-only lens comment trail, /build and /digest role-boundary paths (with a separate test writer and a comment pass after every build), /test-writing, /issue capture, the /intake-signature-/pickup ticket chain with relation and regression scanning and a comment trail on every ticket, self-bootstrapping pickup labels, a bounded reviewer loop and /worktree isolation, /coordinate for one chat that owns a multi-chat release, /ask (grounded Q&A over code, read-only prod data, logs and the tracker), /ticket-format (the company ticket format), /project-setup to seed conventions plus the role-fence hook, the pickup policy, the testing rule, an optional Stop-hook completion check and a read-only tools check, read-only production DB and log access, and the explorer/builder/reviewer agents",
+      "version": "0.11.0"
     },
     {
       "name": "design",

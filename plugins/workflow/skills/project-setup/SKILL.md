@@ -7,7 +7,9 @@ description: >
   the TRAPS.md trap book and FAULT-CATALOGUE.md skeletons, the testing rule at
   .claude/rules/testing.md, optionally a Stop prompt-hook that checks the assistant finished
   what was asked (and lets it wait on work it launched) and a read-only tools-check script that
-  says in plain words which integration credential is missing, malformed or rejected, and the
+  says in plain words which integration credential is missing, malformed or rejected, read-only
+  production access (a CLAUDE.md section, an admin runbook and tools-check checks so Claude can
+  read the production database and logs to scope tickets and can never write), and the
   .claude/settings.json entries that auto-install this toolkit's plugins for everyone who clones
   the repo. Use in
   a fresh or existing repo when the user says "/project-setup", "set up this project",
@@ -57,6 +59,11 @@ Ask via AskUserQuestion (multiSelect) which pieces they want:
 9. **The tools check** at `scripts/tools-check.sh` (from `templates/tools-check.sh`), a read-only
    script that checks each integration's credential (present, sane shape, one authenticated read)
    and prints one plain line per check
+10. **Production read-only access (DB and logs)** - a "Reading production (READ-ONLY)" and a "Reading
+    logs" section in CLAUDE.md, an admin runbook at `docs/runbooks/prod-readonly-access.md` (from
+    `templates/prod-readonly-runbook.md`), and the `prod-db` and `logs` checks in the tools check, so
+    Claude can read the production database and logs to scope tickets and diagnose, and can never
+    write
 
 Default recommendation: all five of 1-5 for a fresh repo; for an existing repo with its own
 CLAUDE.md, recommend 2-5 plus a conventions MERGE. Offer 6 only where the project actually has a
@@ -64,7 +71,9 @@ tracker that work arrives through: the pickup skills stop cleanly when the file 
 half-filled one is worse than none. Recommend 7 wherever the repo has a test suite or is about to
 get one. Offer 8 to anyone who runs long autonomous sessions; it is optional because a completion
 check is a judgment the team should choose. Recommend 9 wherever the work depends on a VCS host or a
-tracker reached with a token.
+tracker reached with a token. Offer 10 wherever someone (typically a PM) will scope tickets
+against a production system; it needs an admin with production rights to do their half, so say so
+when offering it, and pair it with 9 (the checks live in the tools check).
 
 ## Step 3: Seed
 
@@ -137,9 +146,10 @@ tracker reached with a token.
   the key where the project has none rather than inventing a label its board does not use. Point
   `lens_trail.sidecar` at the directory this project actually keeps review notes in, and leave
   `post_comments` true unless the team says its board is noisy enough that a sharpening trail would
-  bury the ticket, in which case false keeps that reasoning in the sidecar and the run's report. Leave
-  `premises_location` at `"body"` unless the ticket body must carry no technical detail: `"sidecar"`
-  means the premises go at the top of the builder brief and the body gets one pointer line. Ask for
+  bury the ticket, in which case false keeps that reasoning in the sidecar and the run's report. Keep
+  `premises_location` at the seeded `"sidecar"` (the company ticket format, `workflow:ticket-format`:
+  the premises go at the top of the builder brief and the body gets one pointer line) unless the
+  project wants its file:line premises in the ticket body, in which case set `"body"`. Ask for
   the status names and the owners rather than guessing them, and tell the user that the signature
   (moving a ticket to `signed_status`) is theirs alone and the only thing that authorises a pickup.
 
@@ -181,6 +191,46 @@ tracker reached with a token.
   with `bash` and show the user the output. Tell them to run it before rotating any credential: a 401
   that looks like an expired token was once a shell profile line joined to the next one, so the value
   ended in `export`.
+
+- **Production read-only access (DB and logs)**: this piece is split between two people, and
+  project-setup does NEITHER person's steps for them. It seeds the files and hands over.
+  - **What it writes.** (a) The two sections "Reading production (READ-ONLY)" and "Reading logs" from
+    `templates/CLAUDE-template.md` into CLAUDE.md (as a proposed merge when CLAUDE.md exists), with the
+    status line set to NOT ACTIVE. (b) `templates/prod-readonly-runbook.md` to
+    `docs/runbooks/prod-readonly-access.md` (skip if a runbook for this already exists; point the
+    CLAUDE.md section at it instead). (c) In `scripts/tools-check.sh`, keep `prod-db` and `logs` in
+    `CHECKS` and leave `PRODDB_CMD` / `LOGS_CMD` empty so they print SKIP until the access is live.
+  - **Filling the slots.** Fill from the repo what is safe to read there: the cloud and database
+    engine (deploy config, docker-compose, settings modules) and the NAMES of the settings files and
+    variables that hold database credentials, never their values. Leave every production identifier
+    you cannot see (project, instance, role and secret names) as its `<PLACEHOLDER>` for the admin:
+    an invented name is worse than a visible gap. The GCP section of the runbook is an example;
+    delete it when the project is on another cloud.
+  - **The ADMIN's half** (an engineer with admin rights on production; runbook steps 1-4): create the
+    read-only cloud identity (connect to the database, read logs, read one secret), create the
+    database role with SELECT-only grants (SELECT only on sequences too),
+    `ALTER ROLE ... SET default_transaction_read_only = on`, no role attributes or memberships, and
+    ownership of nothing (TEMPORARY stays: allowed, outside the guarantee: the guarantee covers
+    persistent data),
+    close the PUBLIC doors (revoke `CREATE` on `public`, inventory `SECURITY DEFINER` functions and
+    revoke EXECUTE on any that can write, approving the rest in `PRODDB_ALLOWED_FUNCS`), add the grant
+    re-run to the provisioning runbook for schemas or tenants created later, publish the read-only
+    connection secret, hand the PM the identity's key.
+  - **The PM's half** (on their own machine; runbook steps 5-8): install the cloud CLI, the database
+    proxy and `psql`, activate the read-only identity, revoke their own cloud login AND its
+    application-default credentials, blank every read-write database password on the machine, then
+    verify from the privilege catalogue that the role cannot write (step 8's SELECTs; no write is
+    ever attempted, not even a rolled-back one).
+  - **Switching it on.** Only after step 8 passes (default on, every write-path count 0): fill
+    the CLAUDE.md slots (identity, connect command, query runner, log command, the verified result and
+    date), flip the status to ACTIVE, set `PRODDB_CMD` and `LOGS_CMD` in the tools check, run it, and
+    show the user that `prod-db` and `logs` print OK. Anything else is not ready. `WRITABLE` means stop:
+    the role has a write path, the line names which, and the admin's database-role step is not done.
+    `READ-ONLY-DEFAULT-OFF` is a failure too: no write path found, but the read-only default is missing.
+  - **Never, in this piece:** run the admin's commands (they write to production IAM, the database and
+    the secret store, which is a human's act even when the session could), read or print a secret's
+    value, ask for a read-write password to "test with", or test the guard by writing (not even a
+    rolled-back or temporary write; the catalogue check is the test).
 
 ## Step 4: Report
 

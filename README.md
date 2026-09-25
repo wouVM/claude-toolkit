@@ -14,6 +14,12 @@ lifted out of project repos so every project (and every teammate) gets them from
 Skills arrive namespaced: `workflow:gemini`, `workflow:issue`, `design:gsap`, etc.
 Invoke them as slash commands (`/workflow:project-setup`) or let them trigger by description.
 
+## PM day one
+
+A product manager setting up Claude on a CVT project (read the code, read-only prod data and logs,
+talk through requirements, turn requests into signed-off tickets) starts with
+[docs/pm-day-one.md](docs/pm-day-one.md): who does each step, how long it takes, and what never happens.
+
 ## What's inside
 
 ### `workflow` - the landing gates
@@ -71,6 +77,27 @@ subscription) for `gemini`. Skills degrade gracefully and tell you what is missi
 `industrial-brutalist-ui`, `mobile-app-ui-design`, `swiftui-skills`, `product-film-craft`.
 
 ## Changes
+
+### workflow 0.11.0
+
+For PMs on any CVT project who scope tickets with Claude the way FCB does (see docs/pm-day-one.md).
+
+- `ask` (new): answers a question or talks a requirement through, grounded in the code, a read-only
+  production query, the logs and the tracker, every claim cited with the time it was checked. It checks
+  what already ships before recommending anything, never edits, and offers `intake` at the end.
+- `ticket-format` (new): the company house format for tickets (green user-story panel, blue
+  business-requirements panel, outcomes only, fixed section order, the relation scan on rewrites).
+  `intake` uses it when a project has no house skill of its own.
+- `premises_location` config: `"sidecar"` (what the template seeds) keeps the file:line premises out of
+  the ticket body, at the top of the builder brief, with one pointer line in the body; a config without
+  the key reads as `"body"`.
+- `intake` proves the tracker can be read before the relation scan and stops when it cannot, so a
+  duplicate is never filed because the scan silently found nothing.
+- `project-setup` piece 10, production read-only access (DB and logs): CLAUDE.md sections, an admin
+  runbook, and `prod-db` / `logs` checks in the tools check. The `prod-db` check never writes; it reads
+  the privilege catalogue and fails on any write path (grants, views, sequences, SECURITY DEFINER
+  functions, schema CREATE, role attributes, memberships) or when the read-only default is off.
+- `docs/pm-day-one.md`: the setup guide, step by step, with who does each step.
 
 ### workflow 0.10.0
 
