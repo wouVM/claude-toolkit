@@ -43,7 +43,7 @@
     "post_comments": true,
     "sidecar": "docs/<ticket>-review.md"
   },
-  "premises_location": "body",
+  "premises_location": "sidecar",
   "require_ready_check": true,
   "pr": {
     "skill": "<PR_SKILL>",

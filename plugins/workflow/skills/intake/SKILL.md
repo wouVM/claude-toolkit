@@ -32,10 +32,24 @@ Read `.claude/pickup.json` from the repo root. It names the tracker, the project
 signed statuses, the labels, the `diagnosis_kinds` this project routes on, the `relations` block
 (how far back to look for closed tickets, and the project's regression marker), the `lens_trail`
 block (whether the sharpening trail posts as ticket comments, and where its sidecar lives), and
-`premises_location` (`"body"`, the default, or `"sidecar"`: see Step 4). If the file is
+`premises_location` (`"sidecar"` or `"body"`: see Step 4; when the key is absent it reads as
+`"body"` for backward compatibility, while the project-setup template seeds `"sidecar"`, the
+company format). If the file is
 absent, say exactly which fields you would need and stop: guessing a tracker project key files a
 ticket into somebody else's board, and inventing a diagnosis kind produces a verdict that
 `workflow:pickup` cannot route.
+
+Then prove the tracker can be READ before any other work, once per session, writing nothing. Run
+one cheap search on the configured project (in Jira, `project = <KEY>` with a result limit of 1; on
+GitHub, `gh issue list --repo <REPO> --limit 1`) and check that it returns a result set. Zero results
+is a valid answer; an error is not. If it fails because the connector is not authorised, the MCP
+server is not loaded in this session, the token is rejected, or the project key resolves to nothing,
+STOP and name exactly what is missing and what the human should do about it (authorise the
+connector in claude.ai settings, restart the session so the MCP loads, fix the token, correct the
+key in `.claude/pickup.json`). Never skip the Step 3 relation scan and file anyway. Why: a scan that
+cannot read the tracker finds no duplicate and no regression, and "nothing found" looks exactly like
+"nothing there", so the run files the duplicate of an open ticket or a fresh bug for something
+already fixed, and nobody can tell from the ticket that the check never ran.
 
 ## Step 1: the whole source, then symptom versus inference
 
@@ -127,17 +141,20 @@ it cheap, the closed ones on the same default window. A missing optional block n
 
 If the project has its own ticket-writing skill (`jira-ticket-writing`, a house template, a
 CONTRIBUTING section), USE IT and let it own the format. This skill orchestrates; it does not
-impose a second house style on top of an existing one. Only when no such skill exists do you write
-the body yourself: symptom, inference, diagnosis verdict, the cited premises, acceptance criteria
-that someone who never reads the diff could check.
+impose a second house style on top of an existing one. When no such skill exists, the default house
+format is `workflow:ticket-format` (the green user-story panel, the blue business-requirements
+panel, its section order and rules): draft the body in it, carrying symptom, inference, diagnosis
+verdict, the cited premises, and acceptance criteria that someone who never reads the diff could
+check.
 
 Put the PREMISES at the top, as a short list with their citations. A human who knows the system can
 then falsify the ticket in one read, which is the cheapest review available anywhere in this chain.
-One exception: where `.claude/pickup.json` sets `premises_location: "sidecar"` (a project whose
-ticket body carries no technical detail), the PREMISES block goes at the top of the spec-sharpen
-sidecar, which is also the builder brief (`lens_trail.sidecar`), and the body carries one
-non-technical line instead: `Premises and evidence: <sidecar path or link>`. The premise-reconcile
-comment still posts them on the ticket, so the one-read falsification survives.
+One exception: where `.claude/pickup.json` sets `premises_location: "sidecar"` (the company format,
+which the project-setup template seeds, for a ticket body that carries no technical detail; a
+project without the key keeps `"body"` for backward compatibility), the PREMISES block goes at the
+top of the spec-sharpen sidecar, which is also the builder brief (`lens_trail.sidecar`), and the
+body carries one non-technical line instead: `Premises and evidence: <sidecar path or link>`. The
+premise-reconcile comment still posts them on the ticket, so the one-read falsification survives.
 
 Whatever the format, the evidence quotes the reporter verbatim: short quotes, only the passages that
 carry the symptom, each with its source named (the thread and date, the sheet row, the transcript
