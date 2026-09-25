@@ -30,8 +30,9 @@ read. The human signs it. The signature is the only thing that authorises work.
 
 Read `.claude/pickup.json` from the repo root. It names the tracker, the project key, the draft and
 signed statuses, the labels, the `diagnosis_kinds` this project routes on, the `relations` block
-(how far back to look for closed tickets, and the project's regression marker), and the `lens_trail`
-block (whether the sharpening trail posts as ticket comments, and where its sidecar lives). If the file is
+(how far back to look for closed tickets, and the project's regression marker), the `lens_trail`
+block (whether the sharpening trail posts as ticket comments, and where its sidecar lives), and
+`premises_location` (`"body"`, the default, or `"sidecar"`: see Step 4). If the file is
 absent, say exactly which fields you would need and stop: guessing a tracker project key files a
 ticket into somebody else's board, and inventing a diagnosis kind produces a verdict that
 `workflow:pickup` cannot route.
@@ -132,6 +133,11 @@ that someone who never reads the diff could check.
 
 Put the PREMISES at the top, as a short list with their citations. A human who knows the system can
 then falsify the ticket in one read, which is the cheapest review available anywhere in this chain.
+One exception: where `.claude/pickup.json` sets `premises_location: "sidecar"` (a project whose
+ticket body carries no technical detail), the PREMISES block goes at the top of the spec-sharpen
+sidecar, which is also the builder brief (`lens_trail.sidecar`), and the body carries one
+non-technical line instead: `Premises and evidence: <sidecar path or link>`. The premise-reconcile
+comment still posts them on the ticket, so the one-read falsification survives.
 
 Whatever the format, the evidence quotes the reporter verbatim: short quotes, only the passages that
 carry the symptom, each with its source named (the thread and date, the sheet row, the transcript

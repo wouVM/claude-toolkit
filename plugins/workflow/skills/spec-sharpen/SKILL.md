@@ -44,6 +44,7 @@ spec itself, and where the spec is a ticket the same record posts as comments on
 `lens_trail` block in `.claude/pickup.json` configures both: `post_comments` (default: post,
 where a ticket exists) and `sidecar` (the path pattern for the review file). A project whose
 tracker is noisy sets `post_comments: false` and keeps everything in the sidecar and the report.
+Where the config sets `premises_location: "sidecar"`, the premises live at the top of the sidecar, not the body: give every lens except the blind one that premise block along with the body.
 
 Before rewriting a ticket, read its status and history. A ticket already done or in progress means
 the instruction to rewrite it rests on a stale premise: stop and confirm before overwriting anything.

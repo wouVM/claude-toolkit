@@ -137,7 +137,9 @@ tracker reached with a token.
   the key where the project has none rather than inventing a label its board does not use. Point
   `lens_trail.sidecar` at the directory this project actually keeps review notes in, and leave
   `post_comments` true unless the team says its board is noisy enough that a sharpening trail would
-  bury the ticket, in which case false keeps that reasoning in the sidecar and the run's report. Ask for
+  bury the ticket, in which case false keeps that reasoning in the sidecar and the run's report. Leave
+  `premises_location` at `"body"` unless the ticket body must carry no technical detail: `"sidecar"`
+  means the premises go at the top of the builder brief and the body gets one pointer line. Ask for
   the status names and the owners rather than guessing them, and tell the user that the signature
   (moving a ticket to `signed_status`) is theirs alone and the only thing that authorises a pickup.
 
