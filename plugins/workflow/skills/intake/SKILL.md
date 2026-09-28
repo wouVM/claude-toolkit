@@ -1,18 +1,15 @@
 ---
 name: intake
 description: >
-  Turn an incoming request (a pasted email, a forwarded complaint, a file, a Gmail label) into
-  one diagnosed, evidence-cited, sharpened ticket filed in the tracker as a DRAFT for a human
-  to sign. Separates the reporter's SYMPTOM from their INFERENCE, dispatches a grounded
-  investigation that must cite file:line for every claim about how the system behaves today,
-  scans the tracker for what the request already relates to (a duplicate of an open ticket, or a
-  REGRESSION of a closed one), then runs spec-sharpen and files. Use when the user says
-  "/intake", "turn this email into a ticket", "file this complaint", "a client reported X, write
-  it up", "triage this request", "did anyone already report this?", "is this a known issue",
-  "didn't we fix this already", or pastes a customer message expecting work to come out of it.
-  NOT for writing a ticket the
-  user has already diagnosed (file that yourself), NOT for picking up a signed ticket (that is
-  workflow:pickup), and it never signs off its own ticket.
+  Turn an incoming request (a pasted email, a forwarded complaint, a file, a Gmail label) into one
+  diagnosed, evidence-cited, sharpened ticket filed as a DRAFT for a human to sign. Separates the
+  reporter's SYMPTOM from their INFERENCE, runs a grounded investigation that cites file:line for
+  every claim about current behaviour, scans the tracker for duplicates and regressions, then runs
+  spec-sharpen and files. Use when the user says "/intake", "turn this email into a ticket", "file
+  this complaint", "a client reported X, write it up", "triage this request", "is this a known
+  issue", "didn't we fix this already", or pastes a customer message expecting work to come out of
+  it. NOT for a ticket the user already diagnosed, NOT for picking up a signed ticket
+  (workflow:pickup), and it never signs its own ticket.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, AskUserQuestion, Skill
 ---
 

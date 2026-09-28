@@ -1,18 +1,15 @@
 ---
 name: ticket-format
 description: >
-  The company house format for tickets: a green panel for the user story, a blue panel for the
-  business requirements, a fixed section order (user-facing text, acceptance criteria, what staging
-  cannot prove, route/deploy order/activation, out of scope), outcomes only with no technical specs
-  in the body, the description as the contract and the comments as the trail. Also the path for
-  enriching or rewriting an EXISTING ticket: a required relation scan, a draft in this format, a
-  checked write-back, then workflow:spec-sharpen with its ready check as the last write.
-  Tracker-aware: Jira ADF panels by default, GitHub alert blocks on GitHub issues. It is the default
-  house format workflow:intake's Step 4 uses when a project has no house skill of its own, and the
-  base a project's own ticket skill layers on. Use when the user says "/ticket-format", "format this
+  The company house format for tickets: a green user-story panel, a blue business-requirements
+  panel, a fixed section order (user-facing text, acceptance criteria, what staging cannot prove,
+  route/deploy order/activation, out of scope), outcomes only with no technical specs, the
+  description as the contract and comments as the trail. Also the path for enriching or rewriting an
+  EXISTING ticket: relation scan, draft, checked write-back, then workflow:spec-sharpen. Jira ADF
+  panels by default, GitHub alert blocks on GitHub issues. Default format for workflow:intake when a
+  project has no house skill of its own. Use when the user says "/ticket-format", "format this
   ticket", "rewrite this ticket", "detail this issue", "put this in house format", or a ticket is
-  about to be drafted, restructured or reformatted. A NEW ticket from a request starts at
-  workflow:intake, not here.
+  about to be drafted or reformatted. A NEW ticket from a request starts at workflow:intake.
 allowed-tools: Read, Write, Edit, Bash, Agent, Skill
 ---
 

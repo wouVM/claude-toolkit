@@ -1,21 +1,15 @@
 ---
 name: spec-sharpen
 description: >
-  Sharpen a spec, ticket, issue, or requirements doc through independent multi-pass review
-  until it is SIGNABLE: a fresh-agent TPM lens, a blind lens that never sees the draft, a
-  code-grounded dev lens, a cold exhaust pass, and a mechanical premise reconcile (every
-  present-tense claim about current system behavior gets a file:line citation or gets reworded
-  out), each lens capped at five ranked findings, with DECIDE/DEFER/KILL triage, a convergence
-  stop rule, then a ready check and a plain explanation for the person who signs. This is the
-  spec-side landing gate that makes spec-driven development real: defects caught here never
-  reach the build. It leaves the reasoning as a
-  comment trail on the ticket, one comment per lens carrying each finding's fate plus one for
-  the cited premises, so a DEFERRED or KILLED finding stays reviewable instead of vanishing.
-  Works on a Jira ticket (via
-  the Atlassian MCP), a GitHub issue (via gh), or a plain markdown spec file. Use when the
-  user says "sharpen this spec/ticket", "are these requirements complete", "make this
-  signable", "spec-driven", or before handing any non-trivial spec to a builder (human or
-  agent). NOT for reviewing code - that is the diff-side gate.
+  Sharpen a spec, ticket, issue, or requirements doc through independent multi-pass review until it
+  is SIGNABLE: a fresh-agent TPM lens, a blind lens that never sees the draft, a code-grounded dev
+  lens, a cold exhaust pass, and a premise reconcile (every present-tense claim about current
+  behaviour gets a file:line citation or is reworded out), five ranked findings per lens,
+  DECIDE/DEFER/KILL triage, a convergence stop rule, then a ready check and a plain explanation for
+  the signer. Leaves one comment per lens on the ticket so deferred or killed findings stay
+  reviewable. Works on Jira (Atlassian MCP), GitHub issues (gh), or a markdown spec. Use when the
+  user says "sharpen this spec/ticket", "are these requirements complete", "make this signable",
+  "spec-driven", or before handing a non-trivial spec to a builder. NOT for reviewing code.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, AskUserQuestion
 ---
 

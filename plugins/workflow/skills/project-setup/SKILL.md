@@ -1,20 +1,15 @@
 ---
 name: project-setup
 description: >
-  Seed a repo with the toolkit's working conventions so every new project starts set up
-  properly: a CLAUDE.md built from the conventions template (kernel mode, proportionality,
-  lib-first, the trap book, the landing gates), the judge rubric at .claude/gemini-judge.md,
-  the TRAPS.md trap book and FAULT-CATALOGUE.md skeletons, the testing rule at
-  .claude/rules/testing.md, optionally a Stop prompt-hook that checks the assistant finished
-  what was asked (and lets it wait on work it launched) and a read-only tools-check script that
-  says in plain words which integration credential is missing, malformed or rejected, read-only
-  production access (a CLAUDE.md section, an admin runbook and tools-check checks so Claude can
-  read the production database and logs to scope tickets and can never write), and the
-  .claude/settings.json entries that auto-install this toolkit's plugins for everyone who clones
-  the repo. Use in
-  a fresh or existing repo when the user says "/project-setup", "set up this project",
-  "seed the conventions", "bootstrap claude for this repo", or "give this repo the toolkit
-  setup". Merges with an existing CLAUDE.md, never overwrites one.
+  Seed a repo with the toolkit's working conventions: a CLAUDE.md from the conventions template
+  (kernel mode, proportionality, lib-first, trap book, landing gates), the judge rubric, TRAPS.md
+  and FAULT-CATALOGUE.md skeletons, the testing rule, an optional Stop-hook completion check, a
+  read-only tools-check script that names which credential is missing or rejected, optional
+  read-only production DB and log access that can never write, and the .claude/settings.json entries
+  that auto-install this toolkit's plugins for everyone who clones the repo. Use in a fresh or
+  existing repo when the user says "/project-setup", "set up this project", "seed the conventions",
+  "bootstrap claude for this repo", or "give this repo the toolkit setup". Merges with an existing
+  CLAUDE.md, never overwrites one.
 allowed-tools: Bash, Read, Write, Edit, Glob, AskUserQuestion
 ---
 

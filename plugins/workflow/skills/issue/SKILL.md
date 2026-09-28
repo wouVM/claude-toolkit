@@ -1,19 +1,15 @@
 ---
 name: issue
 description: >
-  File a captured idea, escalation, bug, task, or design thought as a GitHub issue in the
-  current repo, auto-classified with a label and cross-linked to any related open issues,
-  so a loose thought becomes a tracked, referenceable `gh#N`. Use whenever the user wants to
-  capture / file / open / track an issue for something, retain an idea, turn an escalation or
-  brainfart into a tracked item, or amend an existing one. On filing it classifies the item
-  (idea / escalation / bug / task / architecture / escape) and ASKS if the category is unclear,
-  scours open issues for duplicates and relations and proposes a merge or link BEFORE creating,
-  then replies with the `gh#N` handle, its URL, and the label. An `escape` (a defect found after a
-  ticket was signed) records the flow step that should have caught it, and `/issue escapes` counts
-  them per step. Triggers on "/issue", "file this", "open an issue for this", "capture this",
-  "track this idea", "log this escalation", "this escaped", "count escapes", "amend gh#N by ...".
-  NOT for reviewing code, and NOT for filing to an external bug tracker (escapes excepted, which
-  follow the project's tracker).
+  File a captured idea, escalation, bug, task, or design thought as a GitHub issue in the current
+  repo, auto-classified with a label and cross-linked to related open issues, so a loose thought
+  becomes a tracked `gh#N`. Classifies the item (idea / escalation / bug / task / architecture /
+  escape), asks if the category is unclear, and proposes a merge or link with duplicates BEFORE
+  creating. An `escape` (a defect found after a ticket was signed) records the flow step that should
+  have caught it; `/issue escapes` counts them per step. Triggers on "/issue", "file this", "open an
+  issue for this", "capture this", "track this idea", "log this escalation", "this escaped", "count
+  escapes", "amend gh#N by ...". NOT for reviewing code, and NOT for external bug trackers (escapes
+  excepted).
 allowed-tools: Bash, Read, Write, AskUserQuestion
 ---
 

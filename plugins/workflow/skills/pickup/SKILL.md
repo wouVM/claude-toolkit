@@ -2,18 +2,14 @@
 name: pickup
 description: >
   Take a human-signed ticket off the tracker and carry it to an open PR without a person driving
-  each step: poll for signed tickets, CLAIM one so a parallel run cannot take it, isolate a
-  worktree, route by the ticket's diagnosis kind to the project's configured fix skill, run the
-  project's verify command, put the diff through a bounded review loop with the project's own
-  reviewers before it lands, and land only as far as that route's max_autonomy allows. Use when
-  the user says "/pickup", "pick up the next ticket", "work the queue", "anything signed off
-  yet", "take PROJ-123", "review it before the PR", "run the reviewers on this branch", or
-  schedules an unattended run over a tracker. Bootstraps its own labels: a preflight proves the
-  tracker accepts the configured labels and that the poll query is well-formed before any poll
-  runs, so nobody has to hand-apply a label to a real ticket to conjure it. Reads its policy from
-  .claude/pickup.json and stops with an explanation if that file is absent. It NEVER merges,
-  never resolves a conflict, and never signs a ticket itself (that is the human's act, and the
-  ticket half is workflow:intake).
+  each step: poll, CLAIM the ticket so a parallel run cannot take it, isolate a worktree, route by
+  diagnosis kind to the configured fix skill, run verify, put the diff through a bounded review
+  loop, and land only as far as that route's max_autonomy allows. A preflight proves the configured
+  labels and poll query work before any poll runs. Use when the user says "/pickup", "pick up the
+  next ticket", "work the queue", "anything signed off yet", "take PROJ-123", "review it before the
+  PR", or schedules an unattended run over a tracker. Reads .claude/pickup.json and stops if it is
+  absent. It NEVER merges, never resolves a conflict, and never signs a ticket (that is the human's
+  act; the ticket half is workflow:intake).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, AskUserQuestion, Skill
 ---
 
