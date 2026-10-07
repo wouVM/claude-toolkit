@@ -62,7 +62,7 @@ Either way a ticket is not done until spec-sharpen's ready check has passed and 
 comment. Where `require_ready_check` is true, `workflow:pickup` refuses a signed ticket without a
 passing `READY CHECK` block.
 
-## The two hard rules
+## The three hard rules
 
 ### 1. Coloured panels for the top two sections
 
@@ -109,6 +109,21 @@ inconsistent. Write the body in Markdown with `contentFormat: "markdown"`, or in
 `contentFormat: "adf"`. Never paste wiki-markup strings, and never mix two syntaxes in one
 description.
 
+### 3. Short enough to read in one minute
+
+Long tickets do not get read; developers skip requirements they never saw. Limits, per ticket:
+
+- User story: one sentence.
+- Business requirements: at most five sentences, plus one italic `Why:` line with date and source,
+  plus the one sidecar pointer line.
+- Acceptance criteria: four to eight bullets, one line each. More than eight means two tickets, or
+  the bullets are implementation.
+- Route, deploy order and activation: one or two bullets. Out of scope: one bullet.
+
+Not in the body, ever: "where we are today", flows longer than two short paragraphs, reference
+commits, proposed shapes, `file:line`, developer context, the ticket's history. All of it goes to
+the sidecar review file, which the body points to in one line. Before saving, count the AC lines.
+
 ## Section order
 
 Use these titles, in this order:
@@ -124,8 +139,8 @@ Use these titles, in this order:
 3. **User-facing text** (only when the ticket introduces copy a user, customer or guest will see):
    each language as its own blockquote, labelled with the language. Which languages, which is the
    default, and the spelling rules belong to the project's house skill.
-4. **Acceptance criteria**: plain bullets, outcome level ("When X, then Y"). Simple bullets, not
-   verbose GIVEN/WHEN/THEN blocks. Each needs a black-box observable a named test or a named check
+4. **Acceptance criteria**: four to eight plain bullets, one line each, outcome level ("When X, then
+   Y"). Simple bullets, not verbose GIVEN/WHEN/THEN blocks. Each needs a black-box observable a named test or a named check
    in production can pass or fail.
 5. **What staging cannot prove**: bullets naming what a staging or beta test cannot show for this
    ticket, and therefore what the production check after release is (staging points at a vendor's
