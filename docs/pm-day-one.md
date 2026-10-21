@@ -211,3 +211,8 @@ draft.
   the only thing that allows work on it to start.
 - Claude never asks you for your personal cloud login to get around a read-only limit. If it
   does, say no and tell the engineer.
+
+## Practice (optional)
+
+`/workflow:pm-grill` is a product-sense interview coach in Luke's style; type `/workflow:pm-grill`
+(or `quiz`, `mock`, `own`) in any project and answer out loud, one question at a time.

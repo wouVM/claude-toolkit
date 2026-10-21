@@ -38,6 +38,7 @@ talk through requirements, turn requests into signed-off tickets) starts with
 | `pickup` | A human-signed ticket becomes a branch: a preflight that proves the tracker accepts the configured labels and that the poll query is well-formed (zero tickets on an unverified query is indistinguishable from no work to do), claim it so parallel runs cannot collide, isolate a worktree, route by diagnosis kind to the project's fix skill, verify, then a bounded review loop (every configured reviewer in parallel, one verified defect blocks, a second round that fails on a brand-new defect escalates to the taste gate instead of a third) and land only as far as that route's `max_autonomy` allows, posting each step (claim, verify, review round, PR) as a comment on the ticket. Never merges |
 | `coordinate` | When several chats work on related tickets, one coordinator chat owns the outcome: a session-state file written before compaction (role, PR table with heads, next steps, settled decisions, open items, access notes), owner chats messaged before their worktree is touched and when done, their "all green" verified rather than relayed, the unmerged combination deployed to staging with a per-ticket note of what staging cannot prove, and the human handed only their own steps (merges, tags, production approvals and writes, messages to people) |
 | `worktree` | The isolation and conflict discipline: one worktree per ticket per sub-repo off a freshly fetched base, conflicts detected with a write-nothing `git merge-tree` dry run and handed to a human, never resolved |
+| `pm-grill` | Interview practice for PMs, the way Luke Filipos runs his sessions: one open product-sense scenario, push-backs one at a time, a scored debrief (GAME, metric definition, recommendation) and the model answer. Modes `grill`, `quiz`, `mock` and `own` (defend your own client's North Star); each session is logged to `docs/pm-grill-log.md` so the next one targets the weakest habit |
 
 And three agents encoding the role-to-model cost discipline (invoke via the Agent tool; the
 description on each is the router - dispatch by role, never downgrade the whole session):
@@ -77,6 +78,13 @@ subscription) for `gemini`. Skills degrade gracefully and tell you what is missi
 `industrial-brutalist-ui`, `mobile-app-ui-design`, `swiftui-skills`, `product-film-craft`.
 
 ## Changes
+
+### workflow 0.12.0
+
+- `pm-grill` (new): product-sense and metrics interview practice for PMs, the way Luke Filipos runs
+  his mentoring sessions. A scenario bank of 19 with hidden model answers and traps, a 42-question
+  quiz bank, Luke's framework in compact form, and an `own` mode that grills the North Star of your
+  own client. Each session appends a scored row to `docs/pm-grill-log.md` in the current project.
 
 ### workflow 0.11.0
 
