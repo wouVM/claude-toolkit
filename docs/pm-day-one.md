@@ -214,5 +214,6 @@ draft.
 
 ## Practice (optional)
 
-`/workflow:pm-grill` is a product-sense interview coach in Luke's style; type `/workflow:pm-grill`
-(or `quiz`, `mock`, `own`) in any project and answer out loud, one question at a time.
+`/workflow:pm-grill` is a PM practice coach in Luke's style: say "I want to practise my PM skills"
+(or type `/workflow:pm-grill design`, `dashboard`, `quiz`, `mock`, `own`) and work through the
+prompt; it answers with questions, one at a time, and keeps your own log in `~/.claude/pm-grill/`.

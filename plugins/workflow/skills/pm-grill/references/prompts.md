@@ -1,34 +1,52 @@
 # Scenario bank
 
-Read only the scenario you picked. "Say" is what you tell the PM, word for word or close. Everything
-under "Hidden" stays hidden until the debrief. `trains:` names the score dimensions the scenario
-tests hardest (G, A, M, E, Def, Pack). L = Luke's own, N = new in his style.
+Read only the scenario you picked. "Say" is what you tell the candidate, word for word or close. Everything
+under "Hidden" stays hidden until the debrief. `type`: A analytical (GAME), D design / product
+sense (goals, users, pains, solutions), B dashboard. `trains:` names the score dimensions the
+scenario tests hardest, in that type's letters (A: G, A, M, E, Def, Pack; D: G, U, P, S, M, T;
+B: Q, H, Def, Act, Cov, Pack). L = Luke's own, N = new in his style, Q = from the interview
+question bank Luke shared on 22.10 (crowdsourced Meta/Google questions).
 
-| id | Scenario | Source | Difficulty | trains |
-|---|---|---|---|---|
-| L1 | StreamBox "Pick for me" | Luke | medium | G, M, Def |
-| L2 | Burger Dash upsell screen | Luke | hard | M, Def, E |
-| L3 | Skylark Air mobile check-in | Luke | hard | Def, M, Pack |
-| L4 | Netflix podcast product North Star | Luke, earlier | medium | G, M |
-| L5 | PayPal: conversion up, monthly actives down | Luke, earlier | hard | A, M, Pack |
-| L6 | MendWell accident clinic: insurer collections | Luke, earlier (fictionalised) | medium | M, Def |
-| N1 | FlatSwap instant booking for hosts | new, marketplace | medium | G, A, M |
-| N2 | LedgerLite onboarding checklist | new, SaaS | easy | G, Def |
-| N3 | PocketPay round-up savings | new, fintech | medium | M, Def, E |
-| N4 | QuickCart delivery ETA | new, delivery | hard | M, E, Pack |
-| N5 | TableTalk WhatsApp booking bot | new, B2B chatbot | hard | G, Def, M |
-| N6 | Zippa surge pricing redesign | new, ride-hailing | hard | M, E, Pack |
-| N7 | Sparkly daily match limit | new, dating | medium | G, M, E |
-| N8 | "North Star dropped 12% this week" | new, drill | medium | A, Pack |
-| N9 | Minutely AI meeting summary | new, SaaS AI | medium | G, M, Def |
-| N10 | GrocerGo picker substitutions | new, delivery | medium | Def, E |
-| N11 | FitTrack streaks | new, consumer | easy | G, M |
-| N12 | Learnly trial 7 to 14 days | new, subscription | medium | Def, E, Pack |
-| N13 | JobLink one-click apply | new, marketplace | medium | M, E |
+| id | Scenario | Source | type | Difficulty | trains |
+|---|---|---|---|---|---|
+| L1 | StreamBox "Pick for me" | Luke 21.10 | A | medium | G, M, Def |
+| L2 | Burger Dash upsell screen | Luke 21.10 | A | hard | M, Def, E |
+| L3 | Skylark Air mobile check-in | Luke 21.10 | A | hard | Def, M, Pack |
+| L4 | Netflix podcast product North Star | Luke, earlier | A | medium | G, M |
+| L5 | PayPal: conversion up, monthly actives down | Luke, earlier | A | hard | A, M, Pack |
+| L6 | Collections product North Star | Luke, earlier | A | medium | M, Def |
+| L7 | Uber rides for seniors | Luke 23.10 | D | medium | U, P, S, T |
+| L8 | Spotify executive dashboard | Luke 22.10 | B | medium | Q, H, Act, Cov |
+| L9 | Google Maps parking | Luke's own 2025 interview | D | hard | G, P, S |
+| L10 | A volunteering product for Meta | Luke 22.10 example | D | medium | G, U, S |
+| L11 | Meta Pay goals and success | Luke 22.10 example | A | medium | G, M, Def |
+| N1 | FlatSwap instant booking for hosts | new, marketplace | A | medium | G, A, M |
+| N2 | LedgerLite onboarding checklist | new, SaaS | A | easy | G, Def |
+| N3 | PocketPay round-up savings | new, fintech | A | medium | M, Def, E |
+| N4 | QuickCart delivery ETA | new, delivery | A | hard | M, E, Pack |
+| N5 | TableTalk WhatsApp booking bot | new, B2B chatbot | A | hard | G, Def, M |
+| N6 | Zippa surge pricing redesign | new, ride-hailing | A | hard | M, E, Pack |
+| N7 | Sparkly daily match limit | new, dating | A | medium | G, M, E |
+| N8 | "North Star dropped 12% this week" | new, drill | A | medium | A, Pack |
+| N9 | Minutely AI meeting summary | new, SaaS AI | A | medium | G, M, Def |
+| N10 | GrocerGo picker substitutions | new, delivery | A | medium | Def, E |
+| N11 | FitTrack streaks | new, consumer | A | easy | G, M |
+| N12 | Learnly trial 7 to 14 days | new, subscription | A | medium | Def, E, Pack |
+| N13 | JobLink one-click apply | new, marketplace | A | medium | M, E |
+| Q1 | Google: a phone for the elderly (65+) | bank | D | easy | U, P, S |
+| Q2 | Facebook: help people find a doctor | bank | D | medium | G, U, S |
+| Q3 | Facebook Events: RSVPs down 10% overnight | bank | A | medium | A, Pack |
+| Q4 | Bike sharing: go freemium? | bank | A | medium | G, E, Pack |
+| Q5 | An engineer wants Marketplace items in News Feed | bank | A | hard | G, E, Pack |
+| Q6 | Design an app for museums | bank | D | easy | U, P, S |
+| Q7 | Any product: build its metrics dashboard (Airbnb) | bank | B | medium | Q, H, Def, Cov |
+| Q8 | Amazon: test a gift card for Prime app downloads | bank | A | hard | Def, E |
+| Q9 | Facebook Lite: what goals would you set? | bank | A | easy | G, M |
+| Q10 | Facebook: improve grocery delivery | bank | D | medium | U, P, T |
 
 ---
 
-## L1 StreamBox "Pick for me" (Luke, medium)
+## L1 StreamBox "Pick for me" (Luke 21.10, medium)
 
 Say: "You're the PM at StreamBox, a streaming service. The team shipped a 'Pick for me' button:
 one tap and it starts something it thinks you'll like. What's the right metric, and how would you
@@ -49,7 +67,7 @@ Hidden:
 - Hypothesis: If we add "Pick for me", the share of sessions that start a show within 2 minutes
   rises without lowering the 10-minute completion rate or retention.
 
-## L2 Burger Dash upsell screen (Luke, hard)
+## L2 Burger Dash upsell screen (Luke 21.10, hard)
 
 Say: "Burger Dash is a food delivery app. The team added an upsell screen before checkout: 'Add
 fries for 2.50?'. Average order value went up. What's the right metric, and was it a success?"
@@ -69,7 +87,7 @@ Hidden:
 - Recommendation: Ship only if profit per checkout started rises and checkout completion does not
   fall beyond the agreed threshold; else limit the screen to large baskets.
 
-## L3 Skylark Air mobile check-in (Luke, hard)
+## L3 Skylark Air mobile check-in (Luke 21.10, hard)
 
 Say: "Skylark Air launched mobile check-in. Leadership wants to know if it's working. What's
 the right metric, and how would you test it?"
@@ -130,28 +148,24 @@ Hidden:
 - Recommendation: Report completed payments per month as the headline, conversion as a diagnostic,
   and find which cohort stopped arriving before deciding anything.
 
-## L6 MendWell accident clinic: insurer collections (Luke, earlier, fictionalised, medium)
+## L6 Collections product North Star (Luke, earlier, medium)
 
-Say: "MendWell runs accident clinics. Patients are treated first, and the clinic bills the
-patient's accident insurer afterwards. The team has been tracking collection rate: the share of
-bills the insurers pay. Is that the right North Star?"
+Say: "You own a collections product: customers who owe money get reminders and payment links.
+The team has been tracking collection rate. Is that the right North Star?"
 
 Hidden:
-- Goals: patient wants treatment without chasing paperwork; insurer wants to pay valid claims
-  only; business wants cash collected for treatment delivered, at low admin cost.
-- Weakness of collection rate alone: rises if you bill fewer hard cases (complex injuries,
-  disputed cover) or only submit the claims that are sure to pass.
-- Company NS for the product: dollars paid by insurers per month for treated patients (level,
-  with the window in the name).
-- Guardrails: collection rate on every billable treatment (share paid within 60 days), claim
-  rejection and dispute rate, admin cost per dollar collected, patients billed directly because
-  the insurer claim was never filed.
-- Gaming: leave old or complex claims out of the denominator; bill only easy, small claims;
-  over-bill now and lose the insurer's trust later.
-- Trap: "Dollars collected went up because patient volume doubled. Success?" (normalise:
+- Goals: customer wants an easy, fair way to settle; business wants cash collected at low cost.
+- Weakness of collection rate alone: rises if you send fewer hard cases into the funnel or chase
+  only small balances.
+- Company NS for the product: dollars collected per month (level, with the window in the name).
+- Guardrail: collection rate (share of due balances collected within 60 days), complaint and
+  dispute rate, cost per dollar collected.
+- Gaming: exclude old debt from the denominator; chase easy small balances; aggressive reminders
+  that lift cash now and churn customers later.
+- Trap: "Dollars collected went up because the overdue book doubled. Success?" (normalise:
   watch the rate guardrail; a level needs its rate beside it.)
-- Recommendation: Lead with dollars collected per month, guard it with collection rate on all
-  billable treatments and the rejection rate.
+- Recommendation: Lead with dollars collected per month, guard it with collection rate on the full
+  due book and the complaint rate.
 
 ## N1 FlatSwap instant booking for hosts (marketplace, medium)
 
@@ -192,7 +206,7 @@ Hidden:
 ## N3 PocketPay round-up savings (fintech, medium)
 
 Say: "PocketPay, a banking app, launches round-ups: each card purchase rounds up to the next
-whole dollar and the change goes into savings. What's the right metric?"
+franc and the change goes into savings. What's the right metric?"
 
 Hidden:
 - Goals: user wants to save without thinking; business wants deposits and primary-account usage.
@@ -234,12 +248,11 @@ inside the chat, with no staff involved. What's the right metric, and how would 
 Hidden:
 - Goals: two customers. Guest wants a confirmed table quickly; restaurant owner wants more
   covers with less phone time. TableTalk wants restaurants that keep paying.
-- Company NS: restaurants still paying after 3 months whose guests book through the chat every
-  week.
+- Company NS: paying restaurants with steady guest use (e.g. 5+ guests chatting a week).
 - Feature primary: share of booking-intent chats that end in a confirmed booking in the
   restaurant's reservation system without staff, per restaurant, per week.
 - Valid outcome: booking honoured (guest showed), not just written.
-- Guardrails: no-show rate on chat bookings, bookings the restaurant had to fix or cancel, handovers
+- Guardrails: no-show rate on chat bookings, bookings the venue had to fix or cancel, handovers
   left unanswered, guest complaint rate.
 - Gaming: "containment rate": the bot never hands over, so chats look resolved while guests
   leave. Or count bookings the system rejected later.
@@ -390,3 +403,298 @@ Hidden:
   side is employers; volume without fit hurts renewals).
 - Recommendation: Keep one-click only if interviews per seeker rise and recruiter response holds;
   otherwise add a fit check before apply.
+
+## L7 Uber rides for seniors (Luke 23.10, D, medium)
+
+Say: "You're a PM at Uber. Uber is launching a rides product for seniors. How would you define
+what success looks like, and what would you launch?"
+
+Hidden (the strongest answers from the 23.10 group call, plus the driver side, which every
+candidate missed):
+- Clarify: who is a senior (65+ or 75+), which markets. Coverage matters: US retirement belts are
+  dense; most Belgian seniors live in villages Uber does not serve.
+- Business goal: Uber is a two-sided marketplace. Why seniors: a growing segment that stops
+  driving within a decade; fills off-peak supply (mid-morning, early afternoon, when drivers sit
+  idle); high lifetime value from predictable weekly trips.
+- User groups by need, not age alone: A recently stopped driving (mobile, socially active); B light
+  assistance (cane, walker, bags); C full assistance (wheelchair, door-through-door care: out of
+  v1, needs a different fleet); caregivers (adult children far away who book and want to see
+  arrival); drivers (supply: unpaid waiting, slow boarding).
+- Pick: A and B plus caregivers, in a dense senior market (Florida pilot: high share of 65+,
+  concentrated in retirement communities, Uber driver coverage already there).
+- Pains, widest and deepest first: 1 losing independence (can't drive or afford a car, family
+  not nearby); 2 reliability anxiety (late to the appointment, stranded with no ride home);
+  3 physical help with bags or a walker; 4 tech friction (busy app, real-time matching is
+  stressful); 5 cost on a fixed income (surge, unpredictable fares); 6 social isolation; 7 trust
+  and safety (low frequency, high impact: a guardrail, not the v1 lead).
+- Solutions mapped: scheduled round-trip rides with reminders (1, 2); opt-in light assistance
+  with paid wait time for drivers (3, driver side); caregiver booking and trip notifications
+  (1, 4, 7); simple mode or book by phone (4); upfront fixed price, no surge on scheduled rides
+  (5). Launch first: scheduled round trips that a caregiver can book, because it hits the two
+  widest pains and builds on existing scheduling.
+- North Star: share of activated 65+ riders who become habitual, 4+ completed trips a month
+  Or successful senior trips per month: accepted, completed, no issue. Rides booked (a common
+  first answer) is weaker: booked is not completed, and a level hides whether riders stick.
+- Inputs: scheduled trips picked up on time, share booked as round trips, share booked by
+  caregivers, 3-month retention of first-time senior riders.
+- Guardrails, both sides: driver acceptance on senior trips, driver earnings per online hour,
+  cancellations and no-shows, wait times for other riders, safety incidents, contribution margin.
+- Hypothesis: If seniors or their caregivers can book scheduled round trips, the share of 65+
+  riders in the Florida pilot taking 4+ trips a month rises, without lowering driver acceptance
+  or earnings per hour.
+- Cheapest test: A/B a simple mode with seniors already on the app before building the full
+  product, then the one-metro pilot.
+- Traps: "You named it Uber Gray. What problem does it solve?" "Are all seniors bad with tech?"
+  "Couldn't a designer just make the icons bigger?" "What do drivers get out of it?" "Rides booked
+  doubled because caregivers book. Success?" (only if completed, habitual trips rose).
+
+## L8 Spotify executive dashboard (Luke 22.10, B, medium)
+
+Say: "The CEO of Spotify comes to you and says: I have no idea what's going on with my business,
+I want to see it in one place. Design a dashboard for me."
+
+Hidden:
+- Business questions, ranked: 1 is the listening audience growing? 2 are we making more money,
+  and from which engine (subscriptions vs ads)? 3 are people getting value? 4 where does the
+  funnel leak (sign-up, active, paid, churn)? 5 is the ad side healthy?
+- Top tile: monthly active users (played 30+ seconds in the last 28 days), all plans. Above paid
+  subscribers because free users earn ad revenue too (a candidate switched to it on 22.10 for exactly this reason).
+- Money row: revenue per month split subscriptions and ads; ARPU (revenue ÷ monthly actives) by
+  plan; paid subscribers.
+- Value row: listening minutes per user per week (all monthly actives in the denominator). Time
+  normalises songs, podcasts and books, which plays do not. Per user, not per active user: per
+  active hides users dropping off, and can rise while many go inactive.
+- Funnel row: sign-up to paid within 30 days (completions ÷ sign-ups in the window), split by
+  path (direct vs via trial); trial-to-paid; monthly paid churn.
+- Ads: advertisers active, revenue per 1,000 ad impressions; the ad funnel has a second side,
+  advertisers buying space, which nobody covered on 22.10.
+- Not on it: total costs (barely move month to month, no action follows); 20 equal-size tiles;
+  top-artist share (a drill-down, not an exec tile).
+- Every tile: its equation, and "if it drops, the next thing I check is".
+- Traps: "Why is that above daily actives?" "Define conversion there." "Books are long, songs are
+  short, how do you compare?" "Per user or per active user?" "How much do costs move month to
+  month?"
+- Package: one number for health (monthly actives), two for money (revenue split, ARPU), one for
+  value (listening per user), two for leaks (conversion, churn).
+
+## L9 Google Maps parking (Luke's own 2025 interview, D, hard)
+
+Say: "You're a PM on Google Maps. Build a parking solution."
+
+Hidden:
+- Trap Luke named: jumping straight to sensors on every space or Street View cars counting spots.
+- Business goal: Maps exists to get people where they are going; parking is the last mile where
+  the trip fails. Business: daily use of Maps and local partners (garages, merchants).
+- User groups: drivers to dense city centres (commuters with a routine, occasional visitors,
+  event-goers), drivers in unfamiliar cities, drivers with disability permits; other side: garage
+  operators, cities. Pick occasional drivers to dense unfamiliar areas: large and deeply felt.
+- Pains: don't know before leaving if parking exists near the destination; circling the block
+  (time, stress, late); price and rules unclear; paying is fiddly; forgetting where you parked.
+  Widest and deepest: uncertainty before leaving and circling.
+- Solutions: parking difficulty forecast at the destination from aggregated location data
+  (circling detection); route straight to a nearby garage with walk time; reserve and pay with
+  garage partners; remember where I parked. Launch first: the forecast plus "route to a garage",
+  because it uses data Maps already has and needs no hardware.
+- North Star: median minutes from entering the destination zone to parked, per navigation to a
+  dense destination, weekly. Inputs: forecast views, garage routes taken. Guardrails: ETA
+  accuracy, navigation starts, privacy complaints, partner satisfaction.
+- Hypothesis: If Maps shows parking difficulty and offers a garage route, median circling time
+  falls without lowering navigation starts.
+
+## L10 A volunteering product for Meta (Luke 22.10 example, D, medium)
+
+Say: "Build a product for volunteering at Meta."
+
+Hidden:
+- Business goal: Meta's mission is community and bringing people closer; volunteering is
+  community offline. For Meta: more meaningful use of Groups and Events, and time well spent.
+- User groups: would-be volunteers (students who need hours, retirees, professionals with skills,
+  one-off vs regular), non-profit organisers (the other side, and the scarce one), friends.
+- Pains: volunteers don't know what is near and when, or how big the commitment is, and going
+  alone is awkward. Organisers: no-shows, recruiting cost, managing shifts. Deepest: organisers'
+  no-shows; widest: volunteers finding a one-off near them.
+- Solutions: volunteer shifts on Events with sign-up, reminders and "friends going"; organiser
+  tools for shifts and attendance; skills matching. Launch first: shifts on Events, because it
+  reuses Events and serves both sides.
+- North Star: attended volunteer shifts per month, confirmed by the organiser. Guardrails:
+  no-show rate, organisers posting again, scam reports.
+- Hypothesis: If organisers can post shifts on Events with reminders and friends going, attended
+  shifts per month rise without more no-shows.
+- Trap: "Sign-ups tripled. Success?" (sign-ups are not attendance).
+
+## L11 Meta Pay goals and success (Luke 22.10 example, A, medium)
+
+Say: "Define the goals and the success metrics for Meta Pay, Meta's checkout product."
+
+Hidden:
+- Goals: user wants to pay fast and safely without typing card details; business wants more
+  commerce on Meta, which makes ads worth more to merchants. Fees are minor.
+- Actions: add a payment method, start checkout, pay, pay again.
+- Company NS: daily active people (or ad revenue); feature NS: monthly active payers, people with
+  1+ successful Meta Pay payment in 28 days. Successful payment volume per month beside it.
+- Definitions: payments that succeeded, net of refunds and chargebacks.
+- Guardrails: fraud and chargeback rate, payment failure rate, merchant refund rate.
+- Gaming: cashback promotions buy payments; counting cards added.
+- Trap: "Payment volume up 30% because one big merchant joined. Success?" (concentration; watch
+  active payers). "Checkout conversion up, payers flat?" (fewer, warmer shoppers).
+
+## Q1 Google: a phone for the elderly, 65+ (bank, D, easy)
+
+Say: "Design a phone for the elderly, 65 plus."
+
+Hidden:
+- Business goal: why Google: Android reach into a growing group that is under-served, and
+  family who buy and set up devices.
+- User groups by need: active 65 to 75 who are fine with smartphones (out); declining eyesight
+  or hearing; early memory decline; living alone; caregivers who set up and support remotely.
+  Pick: living alone with declining eyesight, plus the caregiver.
+- Pains, widest and deepest: missing calls from family; small text and busy menus; an emergency
+  or fall with nobody around; scam calls; medication.
+- Solutions: a simple home screen with big tiles that family set up remotely; fall detection and
+  one-tap emergency; scam call screening; reminders. Launch first: the remotely managed simple
+  mode, cheap as an Android setting, serves the widest pain.
+- North Star: weekly active seniors who make or take 3+ calls or messages with family. Guardrails:
+  support calls per device, returns, false emergency alerts.
+- Trap: "Isn't that just bigger buttons? Why a new product?" (tie it to the deeper pain: staying
+  in touch and safe alone).
+
+## Q2 Facebook: help people find a doctor (bank, D, medium)
+
+Say: "Design a product to help people find a doctor."
+
+Hidden:
+- Business goal: why Facebook: trusted recommendations from friends and local groups, which
+  Google and booking sites lack; more meaningful use of Groups.
+- User groups: people new to a city, parents looking for a paediatrician, people with a chronic
+  condition, urgent needs (out: emergencies belong elsewhere). Pick people new to a city.
+- Pains: who is good and trusted; who takes my insurance and new patients; wait times; booking.
+- Solutions: structured "recommend a doctor" asks in friends and local groups; doctor pages with
+  "accepting new patients"; a booking link. Launch first: recommendations, Facebook's unique edge.
+- North Star: share of doctor searches that end in a booked appointment within 14 days.
+  Guardrails: health privacy complaints, misinformation reports.
+- Traps: "Why would Facebook win here?" "Health data: what do you not touch?"
+
+## Q3 Facebook Events: RSVPs down 10% overnight (bank, A, medium)
+
+Say: "You're the PM of Facebook Events. Overnight, RSVPs dropped 10%. How do you figure out
+what happened?"
+
+Hidden, the order (overnight and sudden points to something mechanical first):
+1. Is it real: logging change, pipeline delay, definition change ("interested" vs "going").
+2. Last night's releases and experiments, and outages.
+3. Segment: platform, app version, country, event type. One segment or all?
+4. Funnel: event impressions, event views, RSVP taps. Which step fell?
+5. External: a holiday, a big event that ended, news.
+6. Then a hypothesis and a decision: roll back, fix, or wait.
+- Traps: "Only iOS, since last night's release." (roll back or hotfix, confirm with the funnel).
+  "'Interested' is up as much as 'going' is down." (a UI change moved taps, not intent; judge by
+  attendance if measurable).
+
+## Q4 Bike sharing: go freemium? (bank, A, medium)
+
+Say: "A bike-sharing company is considering a freemium model. Should they do it?"
+
+Hidden:
+- Goals: rider wants a cheap bike nearby for a short trip; business wants higher revenue per
+  rider and conversion to paid (the bank answer's framing).
+- Actions: first free ride, paid ride, membership.
+- Risk: free riders take bikes at peak, crowding out paying commuters; each ride costs
+  rebalancing and wear.
+- Test: free tier only off-peak, aimed at tourists outside commute hours (the bank answer).
+- Metric: paid rides per new rider within 30 days, per weekly cohort; revenue per bike per day.
+  Guardrails: empty-station rate at peak, paying riders who find no bike, damage per ride.
+- Package: test first, off-peak only; ship if revenue per bike rises and peak availability holds.
+
+## Q5 An engineer wants Marketplace items in News Feed (bank, A, hard)
+
+Say: "A smart engineer comes to you with an idea: show recommended Marketplace items in News
+Feed. What do you do?"
+
+Hidden:
+- Not yes or no. Goals: Marketplace wants transactions; Feed wants meaningful content and ad
+  revenue. Feed space is the most valuable inventory, so items push out friends' posts and ads.
+- Users: buyers browsing, sellers wanting reach, Feed users who never shop.
+- Hypothesis: If Feed shows relevant items, buyer-seller conversations rise without lowering Feed
+  sessions or ad revenue.
+- Test: a 1% holdout. Primary: Marketplace conversations started per Feed user per week.
+  Guardrails: Feed sessions per user, ad revenue per user, hides and "see less".
+- Prioritise against the backlog: reach and impact against effort; credit the engineer.
+- Package: run the small test; ship if net conversations rise and Feed guardrails hold.
+
+## Q6 Design an app for museums (bank, D, easy)
+
+Say: "Design an app for museums."
+
+Hidden:
+- Clarify: for visitors, and whose business (the museum's own app). Museum goals: visits,
+  memberships, donations.
+- User groups: tourists with little time, families with kids, members and regulars, school
+  groups, visitors needing accessibility. Pick tourists with little time: biggest group, deep pain.
+- Pains: too big to know what to see in 90 minutes; queues; language; no context for what is in
+  front of them.
+- Solutions: "my 90 minutes" route with the must-sees; audio in my language; timed tickets.
+  Launch first: the route with audio.
+- North Star: share of app visitors who finish a route. Museum side: membership sign-ups or
+  return visits within a year. Guardrails: crowding at highlights, complaints about phones.
+
+## Q7 Any product: build its metrics dashboard (bank, B, medium)
+
+Say: "Pick a product you know. You're the only PM on it. Build its metrics dashboard." If he
+hesitates more than a few seconds: "Take Airbnb."
+
+Hidden (Airbnb):
+- Business questions: is the marketplace growing on both sides? Are guests finding stays (is it
+  liquid)? Are we making money? Do stays go well?
+- Top tile: nights booked and completed per month, not cancelled.
+- Guest side: monthly bookers; search-to-booking rate (bookings ÷ search sessions, weekly).
+- Host side: active listings with 1+ booked night in the month; host cancellation rate.
+- Money: gross booking value and take rate, revenue per month.
+- Quality: review score, guest complaints per 1,000 stays.
+- Each tile: if it drops, the next check (city, new vs repeat, host or guest side).
+- Trap: "Bookings up, host cancellations up. Good?" (the host side is the scarce one).
+
+## Q8 Amazon: test a gift card for Prime app downloads (bank, A, hard)
+
+Say: "How would you design a test to measure the success of a gift card promotion that gets
+Prime members to download the Prime mobile app?"
+
+Hidden:
+- Goals: Amazon wants members in the app, where they buy more often; members want value.
+- Design: randomise at member level, control gets no offer; maybe two offer sizes.
+- Primary: incremental monthly active app users at day 60 per member offered, not downloads.
+  Downstream: orders per member over 90 days.
+- Guardrails: cost per incremental active app user against its value; web orders just moving to
+  the app (not new spend); gift card abuse.
+- Traps: "Downloads up five times. Success?" (download, redeem, delete). "Members who downloaded
+  spend more." (selection; the control answers it).
+- Window: read at 60 and 90 days, not at the end of the promotion.
+
+## Q9 Facebook Lite: what goals would you set? (bank, A, easy)
+
+Say: "You're the PM of Facebook Lite, the app for low-end phones and slow networks. What goals
+would you set?"
+
+Hidden:
+- Goals: people on cheap phones and costly data want to stay in touch; business wants daily
+  users in growth markets.
+- Company NS: daily active people. Feature NS: share of new Lite installs still daily active at
+  day 30, in target markets.
+- Guardrails: data used per session, crash rate, load time on 2G, app size.
+- Trap: "Lite daily actives up, main app daily actives down by the same amount." (moved, not grew).
+
+## Q10 Facebook: improve grocery delivery (bank, D, medium)
+
+Say: "How would you improve the grocery delivery experience for Facebook?"
+
+Hidden (the bank answer's approach: clarify, goal, segment and persona, needs, brainstorm,
+prioritise, design):
+- Clarify: Facebook does not deliver; it connects people to local stores and couriers through
+  Marketplace, Groups and local businesses.
+- Goal: more local commerce through Facebook; user wants groceries with less time spent.
+- Segment: working adults short on time (the bank answer's pick); also parents, the elderly.
+- Pains: planning the shop, finding which local store delivers, repeat orders.
+- Solutions: reorder last week's basket from a local store's page; a group order with
+  neighbours; a meal plan to basket. Launch first: one-tap reorder from local store pages.
+- North Star: weekly repeat grocery orders through Facebook per active buyer. Guardrail: store
+  fulfilment errors, delivery complaints.
+- Test: pilot with a few stores in one city.
