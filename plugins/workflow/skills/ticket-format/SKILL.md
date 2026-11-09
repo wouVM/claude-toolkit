@@ -37,7 +37,7 @@ Read `.claude/pickup.json` from the repo root when it exists. The keys this skil
 - `premises_location`: `"sidecar"` is the house format and what the project-setup template seeds;
   `"body"` is the opt-out for a project that wants `file:line` premises in the ticket (and what a
   config without the key reads as, for backward compatibility). Also `lens_trail.sidecar` (the sidecar
-  path pattern, for example `docs/<ticket>-review.md`, with `<ticket>` replaced by the ticket ref)
+  path pattern, for example `docs/tickets/<ticket>/review.md`, with `<ticket>` replaced by the ticket ref)
   and `lens_trail.post_comments`.
 - `tracker.diagnosis_kind_marker` (where the diagnosis verdict lives: a label, a field, a body line).
 - `require_ready_check`.
@@ -267,7 +267,7 @@ uses this format for its drafting step.
    GitHub via the mechanical marker check above. The plain API read-back hides Jira panels.
 8. **Sharpen**: run `workflow:spec-sharpen` on the ticket, with the addendum below. Every body edit
    it makes goes back in this format with the panels intact. It ends with the ready check and ELI5
-   comment that `workflow:pickup` parses, so that comment is the LAST write: pickup treats a
+   comment that `workflow:pickup` parses, so that comment is the LAST description-affecting write: pickup treats a
    description edited after the ready check as a fail, and any later edit means re-running the
    premise reconcile and the ready check.
 

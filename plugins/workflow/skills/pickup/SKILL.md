@@ -37,8 +37,10 @@ a defect in the run, not a tidy ticket.
 Read `.claude/pickup.json` from the repo root. Everything policy-shaped lives there: the tracker and
 its statuses, the repos and their base branches, the worktree root, the verify command, the
 diagnosis kinds, the route per kind, the PR skill, and the `review` block (which reviewers to run,
-which taste gate to escalate to, how many rounds are allowed), and `require_ready_check` (whether a
-signed ticket without a passing ready check is refused, see Step 2). If the file is absent, print the
+which taste gate to escalate to, how many rounds are allowed, and when the full panel runs), the
+optional `budget` block (how many paid runs one ticket may spend, see Step 7), and
+`require_ready_check` (whether a signed ticket without a passing ready check is refused, see Step
+2). If the file is absent, print the
 fields that would be needed and stop. Do not improvise a tracker query, a base branch, or a fix
 path: this skill is identical in every project and only the config makes it correct in one.
 
@@ -134,6 +136,11 @@ Look up the ticket's diagnosis kind in `routes`. Each route names a project skil
   ticket: what you found, what you would change, what verification it would need, and the route's
   `reason` if it has one. Then stop, and leave the ticket claimed with the plan visible.
 
+A ticket that trips a tech-design trigger gets its design BEFORE it is signed (`workflow:tech-design`,
+posted on the ticket as a comment headed `DESIGN (picked)`); the route's fix skill then builds it
+with that design as part of the spec. A ticket whose ready check names a design-first route but
+that carries no `DESIGN (picked)` comment is not claimable: refuse it like a failed ready check.
+
 An unconfigured kind is a deliberate gap, usually because a human owns that area. Improvising into
 it is how an automated chain starts writing code nobody asked it to write, in a part of the system
 whose owner was never consulted. A plan on the ticket is useful to that owner; a surprise diff is
@@ -156,7 +163,19 @@ so there is nothing to review and the loop is skipped. If `.claude/pickup.json` 
 block, skip the loop too and SAY SO in the report: a project with no configured reviewers has none,
 and inventing one is worse than naming the gap.
 
-**Dispatch every reviewer in `review.reviewers` IN PARALLEL, in one message.** Each gets the commit
+**Size the panel to the diff.** If `review.full_panel_when` is absent, every reviewer in
+`review.reviewers` runs on every diff, as before. If it is set, a diff that touches one of its
+`paths` globs (auth, payments, guards: whatever the project marks risky) or changes more than
+`changed_lines_over` lines gets the full `reviewers` list; any other diff gets only
+`review.small_reviewers` (default: one fresh `reviewer` agent), then QA if the project has one.
+Also only when it is set: a re-verify after a fix round is one fresh reviewer covering correctness,
+plus any security reviewer in `reviewers` when a risky path is touched, not the whole panel again.
+Also only when it is set: a docs-only diff gets `review.small_reviewers`, never the full panel, so
+it is not left with no reviewer when the panel is all external CLIs. Why: a full panel on a mid-size diff mostly returns P3s and nits, and an external CLI often
+returns "no findings" on a small one, while the full panel on a risky diff is where the real P1s
+come from.
+
+**Dispatch the chosen reviewers IN PARALLEL, in one message.** Each gets the commit
 range and reads the repo itself; none is ever handed pasted code. Each brief also names, by name,
 the existing rules and contracts the change touches or could contradict (the exception next to the
 new rule, the caller that relies on the old meaning), and asks for each whether the new rule and
@@ -166,15 +185,29 @@ the project has (`codex review`, `gemini review`) or this plugin's `reviewer` ag
 are always dispatched fresh, never the agent that wrote the code. The builder does not review itself,
 including when the builder is the thing that just fixed a reviewer's finding.
 
+**External CLI reviewers have two traps.** `codex exec` run from a background shell waits on stdin
+forever unless it gets `< /dev/null`; a run without it once hung for fifteen hours. And a large
+review goes out as several calls of about five files each, not one call over the whole diff. Raw
+reviewer output goes to the session scratchpad; the sidecar keeps only the fate table and a link.
+
 **A single VERIFIED defect blocks, and a majority does not clear one.** If any reviewer reports a
 P0 or P1 it can ground in a file, the work goes back to the route's fix skill with that defect as its
 input, and the verify command runs again afterwards: a fix that breaks the suite is worse than the
 defect it repaired. Never weaken or delete a test to clear a finding. That destroys the exact
 information this run exists to produce.
 
+**Every finding gets a fate.** Each round's findings, every severity, go into a fate table on the
+round's ticket comment and in the sidecar: FIXED, DEFERRED (with the link to the tracked issue that
+now owns it), or DISMISSED with a one-line reason. A finding with no fate blocks the next round and
+blocks the PR. Why: findings that carry over silently, under a fix report saying "Dismissed: none",
+come back as the next round's findings, and the loop runs out of rounds on work it already had.
+Fix each one as a sample of its class (below).
+
 **Fix by class, not by line.** A finding is a sample of a defect class. Grep the codebase for the
 class and fix every instance in one pass. If round N+1 raises the same class as round N, a line was
-fixed instead of the class.
+fixed instead of the class. If a fix round opens a NEW class of false positives, do not layer
+another check on top: go back to the base branch's rule and add only the minimal delta the ticket
+needs. Each layered check is the next round's attack surface.
 
 **A second round is allowed. A third is the wrong instrument.** When a fix fails a SECOND review
 round with a BRAND-NEW defect, one that round N-1's fix introduced, stop patching and run
@@ -190,6 +223,12 @@ stop. Post everything on the ticket: every finding, every fix attempted, the tas
 ran. Leave the worktree and the branch standing and hand it to a human. An exhausted loop is a
 finding, not an obstacle to work around, and a loop with no exit is how an unattended run burns a
 budget and lands something nobody chose.
+
+**Paid runs are capped the same way.** If `budget.paid_runs_per_ticket` is set, count every run
+that costs money (a live LLM eval replay, a paid API test run) across verify, review and fix
+rounds. Before a paid run that would go over the cap, stop and report to the coordinator with the
+results so far; a ticket that is green within the cap goes on to the PR. Never run one more quietly: each extra run looks cheap on its own, and that is how one ticket
+spends five before anyone rules on it.
 
 ## Step 8: LAND, to `max_autonomy` and no further
 

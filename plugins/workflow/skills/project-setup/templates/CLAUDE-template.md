@@ -25,7 +25,15 @@ Every one of these is "the current best answer": when reality moves, update the 
   correct at the seam. Reject the well-meaning heuristic patch that makes one case pass and quietly
   compounds into debt; find the principled form, or escalate. No cleverness for its own sake, no
   cruft, no apologies. The standard is a design you would defend to Linus.
-- **ELI16 by default.** Explain in plain words first and jargon second, everywhere.
+- **ELI16 by default.** Explain in plain words first and jargon second, everywhere. Keep replies to
+  the human short; the detail goes in a file (a doc, the issue, the PR), not the chat.
+- **The human gets decisions, not questions.** Technical choices are the coordinator's: it picks,
+  and fresh reviewers judge. Only business questions (what a user, a customer or the owner gets) go
+  up, batched, each with a recommended answer. And discussing a change is not a go to edit: act on
+  an explicit ask.
+- **Agent memory holds role lessons, not per-ticket state.** A memory says how to do the role better
+  next time; a per-ticket note ("already reported", "waiting on X") belongs on the ticket. Consolidate
+  memories periodically, and delete a wrong one rather than adding a correction next to it.
 - **Do not retain pointers to the past.** In docs AND code: state the CURRENT solution, not what it
   used to be. Git holds the history; a stale "this replaces the old X" line, or a comment narrating
   a change, is rot. Delete and restructure toward what we know now, without apology.

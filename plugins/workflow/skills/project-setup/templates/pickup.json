@@ -32,8 +32,16 @@
   },
   "review": {
     "reviewers": ["codex review", "gemini review"],
+    "small_reviewers": ["reviewer"],
+    "full_panel_when": {
+      "paths": ["**/auth/**", "**/payments/**", "**/guards/**"],
+      "changed_lines_over": 150
+    },
     "taste_gate": "springclean",
     "max_rounds": 2
+  },
+  "budget": {
+    "paid_runs_per_ticket": 2
   },
   "relations": {
     "closed_window_days": 180,
@@ -41,7 +49,7 @@
   },
   "lens_trail": {
     "post_comments": true,
-    "sidecar": "docs/<ticket>-review.md"
+    "sidecar": "docs/tickets/<ticket>/review.md"
   },
   "premises_location": "sidecar",
   "require_ready_check": true,

@@ -56,3 +56,41 @@ and pass on CI. Why: the local database kept its data directory on a VM bind mou
 ownership and permissions shift under load; a named container volume does not do this. The tell:
 the errors name files inside the data directory, never the test's own code. Guard: keep database
 data on a named volume, never a bind-mounted host directory.
+
+## 5. Green is a claim, not a proof
+"All green" came from mocked tests, or from an agent's summary nobody read, and the live path was never
+run. The tell: a "done", "fixed" or "live" with nothing attached. Guard: every such word cites its
+proof (the pasted output, the commit, the file:line), and a mocked pass is never reported as a live one.
+
+## 6. A test that passes with the feature deleted
+The test asserts on a mock, a constant or its own setup, so it stays green when the code it names is
+removed. The tell: you cannot say which line of the feature makes it fail. Guard: delete or break the
+feature once and watch the test go red before trusting it.
+
+## 7. Parallel agents leave contradictions
+Several agents change one rule across many files at once; each edits its own file and none sees the
+others, so the old wording survives somewhere. Guard: after any multi-agent rollout, grep the whole set
+for the old wording and the old names before calling it done.
+
+## 8. Hand-typed timestamps
+A time written into a status file, a ticket or a handover from memory was hours off, and the next reader
+trusted it. Guard: every timestamp comes from `date`, never typed by hand.
+
+## 9. A broad `pkill -f` kills the machine
+A pattern loose enough to match the dev server also matched every other app running, and they all died.
+The tell: a `pkill -f` or `killall` with a short or generic pattern. Guard: stop a server by its port
+(`lsof -ti :<port>`) or its PID, never by a pattern.
+
+## 10. A worktree is not a full checkout
+A fresh worktree has the code but not the untracked `.env`, shares the main checkout's ports and points
+at the same test database, so it fails to start or two runs corrupt each other. Guard: give every
+worktree its own `.env` link, its own ports and its own test database when it is created.
+
+## 11. curl of the HTML is not the UI
+The page renders client-side, so curl returns the shell and a check on it passes while the screen is
+broken, or fails while the screen is fine. Guard: check UI in a real browser (the browser tooling, both
+widths), never by fetching the HTML.
+
+## 12. `codex exec` hangs in a background shell
+Run in the background, `codex exec` waits on stdin that never closes, and the run sits until a timeout.
+Guard: always redirect its input, `codex exec ... < /dev/null`.
