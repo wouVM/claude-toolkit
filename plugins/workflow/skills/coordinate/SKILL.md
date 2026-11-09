@@ -61,6 +61,33 @@ milestone and always before compaction, where the project keeps working notes (f
 
 The test for the file: a fresh chat given only this file can take over without asking a question.
 
+**It is a handoff file for one coordinator run, not a standing project status page.** Where the
+project stands lives in git and the tracker; this file only carries one run across compactions,
+which is why its path names the run's date and topic. **Keep it short: current state only.** On a real release the state file grew into a 500-line append log that
+nobody, human or chat, could read. So the sections above hold only the CURRENT state and are
+replaced in place, never appended to. A row that is settled or superseded is deleted; the file is
+committed, so git keeps the history. Every claim carries its proof and when it was checked:
+`merged (PR #42, head a1b2c3d, checked 2026-11-09 14:10)`, with the time taken from `date`, never
+estimated. A claim without proof is written "unverified". Dates are absolute, never "today".
+
+### Compaction: PRE and POST
+
+**PRE (before compacting, or at the end of the day):**
+
+1. Inventory what is running and parked: background agents (is the task live, or is its output file
+   untouched for ten minutes?), scheduled jobs (session-only, so note each prompt and schedule),
+   `git worktree list` plus `git status -s` in each, unpushed commits, open PRs with their heads.
+2. Refresh the state file with that inventory and a "premises to re-check" list: every "not done
+   yet", "waits for" or "is broken" line, each with the read-only command that re-checks it.
+3. Commit the state file (one line), and tell the human what is safe to compact and what is lost.
+
+**POST (first thing after compaction, before answering anything):**
+
+1. Read the state file end to end. The compaction summary is a lead, not a source.
+2. Re-check every premise against reality: PR states and heads, branches, which agents really run,
+   which scheduled jobs still exist. Where reality changed, fix the file with new proof and time.
+3. Only then answer, citing the re-checked proof. A line that disagrees with a fresh check loses.
+
 ## Talking to owner chats
 
 - **Before touching an owner's worktree or branch** (a fix, a rebase, merging it into a combination

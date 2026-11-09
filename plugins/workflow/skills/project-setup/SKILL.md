@@ -5,7 +5,8 @@ description: >
   (kernel mode, proportionality, lib-first, trap book, landing gates), the judge rubric, TRAPS.md
   and FAULT-CATALOGUE.md skeletons, the testing rule, an optional Stop-hook completion check, a
   read-only tools-check script that names which credential is missing or rejected, optional
-  read-only production DB and log access that can never write, and the .claude/settings.json entries
+  read-only production DB and log access that can never write, opt-in safety hooks (force push,
+  .env reads, lock files, migrations already on the base branch), and the .claude/settings.json entries
   that auto-install this toolkit's plugins for everyone who clones the repo. Use in a fresh or
   existing repo when the user says "/project-setup", "set up this project", "seed the conventions",
   "bootstrap claude for this repo", or "give this repo the toolkit setup". Merges with an existing
@@ -59,6 +60,9 @@ Ask via AskUserQuestion (multiSelect) which pieces they want:
     `templates/prod-readonly-runbook.md`), and the `prod-db` and `logs` checks in the tools check, so
     Claude can read the production database and logs to scope tickets and diagnose, and can never
     write
+11. **The safety hooks** - up to four PreToolUse hooks from `templates/hooks/`, each opt-in on its
+    own: no bare force push or `git reset --hard`, no reading `.env` files, no hand-edited lock
+    files, no edits to a migration already on the base branch
 
 Default recommendation: all five of 1-5 for a fresh repo; for an existing repo with its own
 CLAUDE.md, recommend 2-5 plus a conventions MERGE. Offer 6 only where the project actually has a
@@ -68,7 +72,9 @@ get one. Offer 8 to anyone who runs long autonomous sessions; it is optional bec
 check is a judgment the team should choose. Recommend 9 wherever the work depends on a VCS host or a
 tracker reached with a token. Offer 10 wherever someone (typically a PM) will scope tickets
 against a production system; it needs an admin with production rights to do their half, so say so
-when offering it, and pair it with 9 (the checks live in the tools check).
+when offering it, and pair it with 9 (the checks live in the tools check). For 11, ask per hook
+(multiSelect) and offer only the ones the repo can use: the git and `.env` hooks almost everywhere,
+the lock-file hook where a lock file exists, the migration hook where a migrations directory does.
 
 ## Step 3: Seed
 
@@ -137,7 +143,9 @@ when offering it, and pair it with 9 (the checks live in the tools check).
   has installed and authenticated (an unreachable reviewer is a stalled run, and `pickup` skips the
   loop and says so when the block is absent, which is better than a name that resolves to nothing),
   pick the `taste_gate` it escalates to when a fix keeps minting new defects, and leave `max_rounds`
-  small. Set `relations.regression_label` to the project's own marker for "this came back", or drop
+  small. Set `review.small_reviewers`, `review.full_panel_when` (the project's own risky paths) and
+  `budget.paid_runs_per_ticket` to this team's values, or delete them to keep the full panel on every
+  diff and no paid-run cap. Set `relations.regression_label` to the project's own marker for "this came back", or drop
   the key where the project has none rather than inventing a label its board does not use. Point
   `lens_trail.sidecar` at the directory this project actually keeps review notes in, and leave
   `post_comments` true unless the team says its board is noisy enough that a sharpening trail would
@@ -226,6 +234,34 @@ when offering it, and pair it with 9 (the checks live in the tools check).
     the secret store, which is a human's act even when the session could), read or print a secret's
     value, ask for a read-write password to "test with", or test the guard by writing (not even a
     rolled-back or temporary write; the catalogue check is the test).
+
+- **The safety hooks**: copy each chosen hook from `templates/hooks/` to `.claude/hooks/`, `chmod +x`
+  it, and merge one `PreToolUse` entry per hook into `.claude/settings.json` (keep any existing
+  entries, the role fence's among them):
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [ { "type": "command", "timeout": 5,
+        "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/block-destructive-git.sh\"" } ] },
+      { "matcher": "Read|Write|Edit|Grep", "hooks": [ { "type": "command", "timeout": 5,
+        "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/block-env-read.sh\"" } ] },
+      { "matcher": "Edit|Write", "hooks": [ { "type": "command", "timeout": 5,
+        "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/block-lock-files.sh\"" } ] },
+      { "matcher": "Edit|Write", "hooks": [ { "type": "command", "timeout": 5,
+        "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/block-migration-edits.sh\"" } ] }
+    ]
+  }
+}
+```
+
+  The hooks need `jq`: without it each one allows and says so on
+  stderr, so check `command -v jq` and tell the user if it is missing. Prove each one before saying
+  it is live: pipe one payload it must refuse and one it must allow, e.g.
+  `echo '{"tool_input":{"command":"git push --force origin main"}}' | bash .claude/hooks/block-destructive-git.sh`
+  prints a deny, and the same with `--force-with-lease` prints nothing. Parse the merged settings
+  (`python3 -m json.tool`).
 
 ## Step 4: Report
 

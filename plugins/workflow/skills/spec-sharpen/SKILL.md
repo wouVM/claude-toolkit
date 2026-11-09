@@ -33,7 +33,7 @@ The spec lives where the team tracks work; read it from there and write it back 
 - **Markdown file**: read the path the user names.
 
 The review record (premises, findings, triage fates, mechanism notes for the developer) goes
-to a sidecar file next to the project's docs (e.g. `docs/<ref>-review.md`), NEVER into the
+to a sidecar file next to the project's docs (e.g. `docs/tickets/<ticket>/review.md`), NEVER into the
 spec itself, and where the spec is a ticket the same record posts as comments on it. The
 `lens_trail` block in `.claude/pickup.json` configures both: `post_comments` (default: post,
 where a ticket exists) and `sidecar` (the path pattern for the review file). A project whose

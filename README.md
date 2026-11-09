@@ -6,7 +6,7 @@ lifted out of project repos so every project (and every teammate) gets them from
 ## Install
 
 ```
-/plugin marketplace add <owner>/claude-toolkit     # or a local path while developing
+/plugin marketplace add wouVM/claude-toolkit     # or a local path while developing
 /plugin install workflow@claude-toolkit
 /plugin install design@claude-toolkit
 ```
@@ -35,8 +35,9 @@ talk through requirements, turn requests into signed-off tickets) starts with
 | `test-writing` | Tests that earn their lines, written by a separate agent after the build: WRITE turns the acceptance criteria into one test per rule, spent top-down on a risk ladder; AUDIT grades a branch's tests keep / merge / shrink / cut / gap. Ships `pr_test_stats.py` (size split, test-to-code ratio, diff coverage) for the PR description's Details section |
 | `digest` | The read-side counterpart: send a long PDF, transcript or doc-set to a cheap scout and get findings back, instead of pulling it into the coordinator's context |
 | `intake` | An incoming request becomes one diagnosed ticket: symptom split from the requester's inference, a verdict with `file:line` evidence for every claim about current behaviour, a relation scan over the tracker that catches the duplicate of an open ticket and the REGRESSION of a closed one, sharpened, filed as a DRAFT for a human to sign |
-| `pickup` | A human-signed ticket becomes a branch: a preflight that proves the tracker accepts the configured labels and that the poll query is well-formed (zero tickets on an unverified query is indistinguishable from no work to do), claim it so parallel runs cannot collide, isolate a worktree, route by diagnosis kind to the project's fix skill, verify, then a bounded review loop (every configured reviewer in parallel, one verified defect blocks, a second round that fails on a brand-new defect escalates to the taste gate instead of a third) and land only as far as that route's `max_autonomy` allows, posting each step (claim, verify, review round, PR) as a comment on the ticket. Never merges |
+| `pickup` | A human-signed ticket becomes a branch: a preflight that proves the tracker accepts the configured labels and that the poll query is well-formed (zero tickets on an unverified query is indistinguishable from no work to do), claim it so parallel runs cannot collide, isolate a worktree, route by diagnosis kind to the project's fix skill, verify, then a bounded review loop sized to the diff (`review.full_panel_when`: risky paths or large diffs get the full panel, the rest one fresh reviewer; every finding gets a fate before the next round; an optional cap on paid runs; one verified defect blocks, a second round that fails on a brand-new defect escalates to the taste gate instead of a third) and land only as far as that route's `max_autonomy` allows, posting each step (claim, verify, review round, PR) as a comment on the ticket. Never merges |
 | `coordinate` | When several chats work on related tickets, one coordinator chat owns the outcome: a session-state file written before compaction (role, PR table with heads, next steps, settled decisions, open items, access notes), owner chats messaged before their worktree is touched and when done, their "all green" verified rather than relayed, the unmerged combination deployed to staging with a per-ticket note of what staging cannot prove, and the human handed only their own steps (merges, tags, production approvals and writes, messages to people) |
+| `tech-design` | The step between a sharpened ticket and its signature, only when a trigger fires (several subsystems or ~8 files, a new dependency, a migration, a changed contract, a new long-lived concept): one framing by default, three on demand, the design posted on the ticket as a comment, the coordinator picks with fresh reviewers judging, and only business questions go to a human. Never builds |
 | `worktree` | The isolation and conflict discipline: one worktree per ticket per sub-repo off a freshly fetched base, conflicts detected with a write-nothing `git merge-tree` dry run and handed to a human, never resolved |
 | `pm-grill` | PM practice the way Luke Filipos runs his sessions: an open prompt, clarifying questions, then Socratic probing (questions that lead you to the gap, never the answer mid-exercise), a self-review, a scored debrief and the model answer. Three types: analytical (GAME), design (product sense: goals, user groups, pain points, solutions) and dashboard. Modes `practice`, `design`, `dashboard`, `analytical`, `quiz`, `mock`, `own`; a per-person log in `~/.claude/pm-grill/` targets each person's weakest skill and habits |
 
@@ -78,6 +79,29 @@ subscription) for `gemini`. Skills degrade gracefully and tell you what is missi
 `industrial-brutalist-ui`, `mobile-app-ui-design`, `swiftui-skills`, `product-film-craft`.
 
 ## Changes
+
+### workflow 0.14.0
+
+Lessons from a real release built with this plugin (about 80 tickets); see
+[docs/field-notes-release-1.md](docs/field-notes-release-1.md). New to the plugin? Start with
+[docs/getting-started.md](docs/getting-started.md).
+
+- `pickup`: the review panel is sized to the diff (`review.full_panel_when`, `review.small_reviewers`);
+  every finding gets a fate (FIXED / DEFERRED with a link / DISMISSED with a reason) and an un-fated
+  finding blocks the next round and the PR; a fix that opens a new false-positive class goes back to
+  the base rule plus the minimal delta; an optional `budget.paid_runs_per_ticket` cap; the codex
+  `< /dev/null` and five-files-per-call traps.
+- `tech-design` (new): decide the HOW before a builder invents it, only when a trigger fires. It
+  runs before the ticket is signed and posts the design on the ticket as a comment; the builder
+  commits it with the change.
+- `build` and the `builder` agent: a pre-flight that names files needed beyond the allowlist before
+  any code is written.
+- `project-setup`: opt-in safety hooks (destructive git, `.env` reads, lock files, migrations), new
+  starter traps, and two working rules (the human gets decisions, not questions; agent memory holds
+  role lessons, not ticket state).
+- `coordinate`: the state file keeps only the current state (git keeps the history), and a
+  pre/post compaction procedure.
+- The `pickup.json` template sidecar moved to one folder per ticket: `docs/tickets/<ticket>/`.
 
 ### workflow 0.13.0
 

@@ -18,6 +18,12 @@ Rules:
 - Read the project's `CLAUDE.md` and, if present, its trap book (`TRAPS.md`) BEFORE
   writing code - the work you are about to do is the work most likely to repeat a
   recorded shape.
+- Pre-flight, before writing code: list the files the change must touch beyond the
+  allowlist you were given (import-layer config, dead-code whitelists, fixtures, test
+  files near a length cap, generated migrations). If any is missing, STOP and report it.
+  Contorting the code to stay inside an allowlist that is too small is the wrong fix.
+- If the ticket carries a design (the `DESIGN (picked)` comment), it is part of the spec: commit it
+  as `docs/tickets/<ticket>/design.md` with the change.
 - Foundation-first: contract/schema, then core logic, then surface. State each chunk's
   intended OUTCOME before building it.
 - You write the code, not its new tests: a separate agent writes those from the acceptance

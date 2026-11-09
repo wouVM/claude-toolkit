@@ -36,7 +36,11 @@ spec you cannot hand to a stranger is not finished. For a load-bearing spec, sha
 `workflow:spec-sharpen` before dispatching.
 
 **2. Name the allowlist.** List the exact files the builder may edit. If you cannot name them, the spec is
-not ready and the honest next move is a scout pass (`explorer`, on a cheap model), not a builder.
+not ready and the honest next move is a scout pass (`explorer`, on a cheap model), not a builder. Name
+the side files too: import-layer config, dead-code whitelists, fixtures, test files near a length cap,
+generated migrations. A builder fenced out of one of those contorts the code to stay inside the fence.
+If the ticket carries a design (the `DESIGN (picked)` comment from `workflow:tech-design`), it is part of the spec: add
+`docs/tickets/<ticket>/design.md` to the allowlist and have the builder commit the design there.
 
 **3. Dispatch.** One `Agent` call per independent chunk, in a single message when they do not depend on each
 other. At most about four builders at once, each told to "work in one continuous turn" (without it they stop
@@ -53,6 +57,11 @@ in that one pass. Use this plugin's `builder` agent, or the prompt template belo
 > DO NOT crawl the repo. Read only: the files above, plus `<the 2-4 files the spec names as context>`. Never
 > `node_modules/`. If you find you need a file outside this list, STOP and report what you need and why,
 > rather than widening the read yourself.
+>
+> PRE-FLIGHT, before writing code: list every file this change must touch beyond the code itself
+> (import-layer config, dead-code whitelists, fixtures, test files near a length cap, generated
+> migrations). If any is missing from the list above, STOP and report it. Do not bend the code to stay
+> inside the allowlist.
 >
 > The house rules that bind this change: `CLAUDE.md`, and the trap book if this project keeps one (read the
 > entries your change could repeat, and check your own work against them). Default to NO comment. Add one only

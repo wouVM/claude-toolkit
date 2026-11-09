@@ -13,8 +13,8 @@
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "Landing gates, the ticket chain and role discipline: /gemini and /springclean reviews, /spec-sharpen, /build and /digest, /test-writing, /ask, /ticket-format, /issue, /intake and /pickup (signed ticket to PR under a per-route autonomy dial), /worktree, /coordinate for multi-chat releases, /project-setup to seed conventions and read-only prod access, /pm-grill for PM interview practice, plus the explorer, builder and reviewer agents.",
-      "version": "0.13.0"
+      "description": "Landing gates, the ticket chain and role discipline: /gemini and /springclean reviews, /spec-sharpen, /tech-design, /build and /digest, /test-writing, /ask, /ticket-format, /issue, /intake and /pickup (signed ticket to PR, review sized to the diff), /worktree, /coordinate for multi-chat releases, /project-setup to seed conventions and read-only prod access, /pm-grill for PM interview practice, plus the explorer, builder and reviewer agents.",
+      "version": "0.14.0"
     },
     {
       "name": "design",
